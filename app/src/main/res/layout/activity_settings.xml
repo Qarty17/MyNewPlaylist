@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:layout_weight="1">
+
+            <Button
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:text="@string/settings"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:icon="@drawable/back"
+                app:iconTint="@color/black" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"
+            android:orientation="vertical">
+            <androidx.appcompat.widget.SwitchCompat
+
+                android:id="@+id/switch1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:paddingStart="30sp"
+                android:paddingTop="60dp"
+                android:paddingEnd="25dp"
+                android:text="@string/light_theme"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:gravity="start"
+                android:textAllCaps="false"
+                tools:ignore="RtlSymmetry"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/white"
+                    android:layout_gravity="start"
+                    android:paddingStart="30sp"
+                    android:paddingTop="15dp"
+                    android:text="@string/share_app"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:backgroundTint="@color/white"
+                    android:contentDescription="@string/share_app"
+                    app:icon="@drawable/share"
+                    app:iconGravity="textEnd"
+                    app:iconTint="@color/black"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:backgroundTint="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/support"
+                    android:paddingStart="30sp"
+                    android:paddingTop="15dp"
+                    android:textSize="16sp"
+                    app:iconPadding="10dp"
+                    android:gravity="start"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    tools:ignore="RtlSymmetry" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:backgroundTint="@color/white"
+                    android:contentDescription="@string/support"
+                    app:icon="@drawable/support"
+                    app:iconGravity="textEnd"
+                    app:iconTint="@color/black"/>
+            </FrameLayout>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:backgroundTint="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_agreement"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:gravity="start"
+                    android:paddingTop="15dp"
+                    app:iconPadding="10dp"
+                    android:paddingStart="30sp"
+                    android:textColor="@color/black"
+
+                    tools:ignore="RtlSymmetry"/>
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:backgroundTint="@color/white"
+                    android:contentDescription="@string/user_agreement"
+                    app:icon="@drawable/vector"
+                    app:iconGravity="textEnd"
+                    app:iconTint="@color/black"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

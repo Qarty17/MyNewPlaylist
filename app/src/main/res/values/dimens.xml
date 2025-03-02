@@ -2,5 +2,7 @@
 <resources>
     <dimen name="padding">20dp</dimen>
     <dimen name="cornerRadius">25dp</dimen>
+    <dimen name="textSize">16sp</dimen>
+    <dimen name="textMainSize">20sp</dimen>
 
 </resources>

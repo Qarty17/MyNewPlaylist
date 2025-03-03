@@ -26,6 +26,7 @@
                 android:textAllCaps="false"
                 android:textColor="@color/black"
                 android:textSize="22sp"
+                android:background="@android:color/transparent"
                 android:paddingTop="1dp"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
@@ -91,7 +92,7 @@
                     android:contentDescription="@string/share_app"
                     app:icon="@drawable/share"
                     app:iconGravity="textEnd"
-
+                    android:background="@android:color/transparent"
                     app:iconSize="30sp"
                     app:iconTint="@color/gray" />
             </FrameLayout>
@@ -123,6 +124,7 @@
                     android:contentDescription="@string/support"
                     app:icon="@drawable/support"
                     app:iconGravity="textEnd"
+                    android:background="@android:color/transparent"
                     app:iconSize="30sp"
                     app:iconTint="@color/gray" />
             </FrameLayout>
@@ -154,6 +156,7 @@
                     android:contentDescription="@string/user_agreement"
                     app:icon="@drawable/vector"
                     app:iconGravity="textEnd"
+                    android:background="@android:color/transparent"
                     app:iconSize="20sp"
                     app:iconTint="@color/gray" />
             </FrameLayout>

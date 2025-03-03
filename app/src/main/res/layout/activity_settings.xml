@@ -47,7 +47,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10dp">
+                >
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch1"
@@ -99,7 +99,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10dp">
+              >
 
                 <TextView
                     android:layout_width="match_parent"
@@ -131,7 +131,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingVertical="10dp">
+                >
 
                 <TextView
                     android:layout_width="match_parent"

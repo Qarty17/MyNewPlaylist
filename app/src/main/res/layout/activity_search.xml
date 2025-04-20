@@ -5,6 +5,78 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity">
+    tools:context=".SearchActivity"
+    android:theme="@style/Theme.MyNewPlaylist">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
+
+        <Button
+            android:id="@+id/back2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@color/white"
+            android:fontFamily="@font/ys_display_medium"
+            android:paddingStart="8dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp"
+            android:text="@string/search"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorSecondary"
+            android:textSize="22sp"
+            app:icon="@drawable/back"
+            app:iconSize="45sp"
+            app:iconTint="?attr/colorSecondary" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/radius_layout"
+            android:backgroundTint="@color/white"
+
+            >
+
+            <EditText
+                android:id="@+id/input_edittext"
+                android:fontFamily="@font/ys_display_regular"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@null"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/light_mode"
+                android:drawablePadding="8dp"
+                android:drawableTint="?attr/colorAccent"
+                android:hint="@string/search"
+                android:inputType="text"
+                android:textSize="16sp"
+                android:paddingVertical="8.5dp"
+                android:paddingStart="13dp"
+
+                android:paddingHorizontal="11dp"
+                android:textColorHint="?attr/colorAccent"
+                app:icon="@drawable/light_mode"
+                app:iconTint="@color/black" />
+            <ImageView
+                android:id="@+id/clearIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/vector"
+                android:layout_gravity="center"
+                android:paddingEnd="12dp"
+                android:paddingStart="14dp"
+                android:visibility="gone"
+                app:tint="?attr/colorAccent"
+                />
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

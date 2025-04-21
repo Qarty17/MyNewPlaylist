@@ -13,7 +13,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="colorAccent">@color/gray</item>
-
+        <item name="colorOnSurface">@color/dark_gray</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

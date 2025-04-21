@@ -19,18 +19,19 @@ import androidx.core.view.WindowInsetsCompat
 
 class SearchActivity : AppCompatActivity() {
     @SuppressLint("ServiceCast")
+    var newValue= VALUE_DEF
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_search)
-        var newValue= VALUE_DEF
+
         if(savedInstanceState!=null){
             newValue=savedInstanceState.getString(VALUE, VALUE_DEF)
         }
         val backButton=findViewById<Button>(R.id.back2)
         backButton.setOnClickListener{
-            val backIntent=Intent(this,MainActivity::class.java)
-            startActivity(backIntent)
+            finish()
+
         }
         val inputEditText=findViewById<EditText>(R.id.input_edittext)
 

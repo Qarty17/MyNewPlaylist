@@ -1,9 +1,10 @@
 package com.example.mynewplaylist
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 
@@ -25,10 +26,10 @@ class SettingsActivity : AppCompatActivity() {
         }
         val supportButton = findViewById<Button>(R.id.support)
         supportButton.setOnClickListener{
-            val subject="Сообщение разработчикам и разработчицам приложения Playlist Maker"
-            val message="Спасибо разработчикам и разработчицам за крутое приложение!"
+            val subject=getString(R.string.message_developer)
+            val message=getString(R.string.thanks)
             val supportIntent=Intent(Intent.ACTION_SENDTO)
-            supportIntent.data= "mailto:".toUri()
+            supportIntent.data=Uri.parse("mailto:")
             supportIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf("yourEmail@ya.ru"))
             supportIntent.putExtra(Intent.EXTRA_SUBJECT,subject)
             supportIntent.putExtra(Intent.EXTRA_TEXT,message)
@@ -37,9 +38,8 @@ class SettingsActivity : AppCompatActivity() {
 
         val userAgreement=findViewById<Button>(R.id.agreement)
         userAgreement.setOnClickListener{
-            val url= "https://yandex.ru/legal/practicum_offer/".toUri()
+            val url=Uri.parse(getString(R.string.link))
             val agreementIntent=Intent(Intent.ACTION_VIEW,url)
-
             startActivity(agreementIntent)
         }
     }

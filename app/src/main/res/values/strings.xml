@@ -8,4 +8,7 @@
     <string name="support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
     <string name="back">Назад</string>
+    <string name="message_developer">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="thanks">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="link" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
 </resources>

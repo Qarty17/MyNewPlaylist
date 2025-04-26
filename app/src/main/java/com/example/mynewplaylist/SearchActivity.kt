@@ -16,15 +16,16 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class SearchActivity : AppCompatActivity() {
     @SuppressLint("ServiceCast")
     var newValue= VALUE_DEF
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_search)
-
         if(savedInstanceState!=null){
             newValue=savedInstanceState.getString(VALUE, VALUE_DEF)
         }
@@ -61,6 +62,17 @@ class SearchActivity : AppCompatActivity() {
 
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
+        val listTrack=listOf<Track>(
+            Track(getString(R.string.track_name1),getString(R.string.track_autor1),getString(R.string.track_time1),getString(R.string.artwork_url1)) ,
+            Track(getString(R.string.track_name2),getString(R.string.track_autor2),getString(R.string.track_time2),getString(R.string.artwork_url2)),            Track("Stayin' Alive","Bee Gees","4:10","https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
+            Track(getString(R.string.track_name3),getString(R.string.track_autor3),getString(R.string.track_time3),getString(R.string.artwork_url3)),
+            Track(getString(R.string.track_name4),getString(R.string.track_autor4),getString(R.string.track_time4),getString(R.string.artwork_url4)),
+            Track(getString(R.string.track_name5),getString(R.string.track_autor5),getString(R.string.track_time5),getString(R.string.artwork_url5)))
+        val recycleView=findViewById<RecyclerView>(R.id.recyclerView)
+        recycleView.layoutManager= LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)
+        recycleView.adapter= TrackAdapter(
+            tracks = listTrack
+        )
     }
     private fun clearButtonVisibly(s:CharSequence?):Int {
         return if (s.isNullOrEmpty()) {

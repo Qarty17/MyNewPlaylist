@@ -33,5 +33,10 @@
         <item name="android:layout_gravity">end</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
+    <style name="ButtonViewVectorMedia">
+        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingVertical">5dp</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 
 </resources>

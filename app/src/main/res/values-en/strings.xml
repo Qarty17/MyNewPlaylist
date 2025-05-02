@@ -11,5 +11,8 @@
     <string name="back">back</string>
     <string name="message_developer">Message to the developers and developers of the Playlist Maker app</string>
     <string name="thanks">Thanks to the developers and developers for the cool app!</string>
+    <string name="not_found">Nothing was found</string>
+    <string name="not_internet">Communication problems\n\nThe download failed. Check your internet connection</string>
+    <string name="update">update</string>
 
 </resources>

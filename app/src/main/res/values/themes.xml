@@ -14,6 +14,7 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="colorAccent">@color/gray</item>
         <item name="colorOnSurface">@color/light_gray</item>
+        <item name="colorOnPrimaryContainer">@color/black_2</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

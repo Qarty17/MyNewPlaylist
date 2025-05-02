@@ -122,13 +122,13 @@ class SearchActivity : AppCompatActivity() {
             ) {
                 if(response.code()==200){
                     tracks.clear()
+
                     if(response.body()?.results?.isNotEmpty()==true){
                         tracks.addAll(response?.body()?.results!!)
-
-                        adapter.notifyDataSetChanged()
                     }else{
                         notFound.visibility= View.VISIBLE
                     }
+                    adapter.notifyDataSetChanged()
                 }
             }
 

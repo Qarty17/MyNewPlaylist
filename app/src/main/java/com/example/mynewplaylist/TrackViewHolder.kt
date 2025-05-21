@@ -14,17 +14,21 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class TrackViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.track_view,parent,false)) {
+class TrackViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.track_view,parent,false)){
     private val thisTrackName: TextView=itemView.findViewById<TextView>(R.id.track_name)
     private val thisArtistName: TextView=itemView.findViewById<TextView>(R.id.artist_name)
     private val thisTrackTime=itemView.findViewById<TextView>(R.id.track_time)
     private val thisArtworkUrl=itemView.findViewById<ImageView>(R.id.artwork_url)
 
-    fun bind(model: Track){
+
+    fun bind(model: Track,listener: TrackAdapter.Listener){
         thisTrackName.text=model.trackName
         thisTrackTime.text=SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
         thisArtistName.text=model.artistName
         Glide.with(itemView).load(model.artworkUrl100).placeholder(R.drawable.vector3).transform(
             RoundedCorners(2)).into(thisArtworkUrl)
+        itemView.setOnClickListener {
+            listener.onClick(model)
+        }
     }
 }

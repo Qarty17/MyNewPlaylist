@@ -1,8 +1,7 @@
 package com.example.mynewplaylist
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,51 +10,68 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.collection.ArraySet
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import androidx.core.content.edit
 
-class SearchActivity : AppCompatActivity() {
+const val new_key="key_from_list"
+class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
     private lateinit var backButton: Button
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
     private lateinit var recycleView: RecyclerView
+    private lateinit var historyRecycleView: RecyclerView
     private lateinit var notFound: LinearLayout
+    private lateinit var history: LinearLayout
+    private val historyAdapter= TrackAdapter(this)
     private lateinit var notInternet: LinearLayout
     private lateinit var updateButton: Button
-    private val playlistBaseUrl="https://itunes.apple.com"
-    private val retrofit= Retrofit.Builder()
+    private lateinit var clearHistory: Button
+    //lateinit var searchHistory: SearchHistory
+    private var historyTracks = ArrayList<Track>()
+    private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
+    private val playlistBaseUrl = "https://itunes.apple.com"
+    private val retrofit = Retrofit.Builder()
         .baseUrl(playlistBaseUrl)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-    private var playlistService=retrofit.create(PlaylistApi::class.java)
-    private val tracks=ArrayList<Track>()
-    private val adapter= TrackAdapter()
-    var newValue= VALUE_DEF
+    private var playlistService = retrofit.create(PlaylistApi::class.java)
+    private val tracks = ArrayList<Track>()
+    private val adapter = TrackAdapter(this)
+
+    var newValue = VALUE_DEF
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-        if(savedInstanceState!=null){
-            newValue=savedInstanceState.getString(VALUE, VALUE_DEF)
+        if (savedInstanceState != null) {
+            newValue = savedInstanceState.getString(VALUE, VALUE_DEF)
         }
-        backButton=findViewById<Button>(R.id.back2)
-        backButton.setOnClickListener{
+        backButton = findViewById<Button>(R.id.back2)
+        inputEditText = findViewById<EditText>(R.id.input_edittext)
+        clearButton = findViewById<ImageView>(R.id.clearIcon)
+        recycleView = findViewById<RecyclerView>(R.id.recyclerView)
+        notFound = findViewById<LinearLayout>(R.id.not_found)
+        notInternet = findViewById<LinearLayout>(R.id.not_internet)
+        updateButton = findViewById<Button>(R.id.update_button)
+        history = findViewById<LinearLayout>(R.id.history)
+        clearHistory = findViewById<Button>(R.id.history_button)
+        historyRecycleView = findViewById<RecyclerView>(R.id.recyclerViewHistory)
+
+        backButton.setOnClickListener {
             finish()
         }
-        inputEditText=findViewById<EditText>(R.id.input_edittext)
+
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 search()
@@ -63,49 +79,90 @@ class SearchActivity : AppCompatActivity() {
             }
             false
         }
-        clearButton=findViewById<ImageView>(R.id.clearIcon)
-        clearButton.setOnClickListener{
-            val view:View?=this.currentFocus
-            if (view!=null){
-                val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+
+        val simpleTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() == true) {
+                    recycleView.visibility = View.GONE
+                    historyAdapter.notifyDataSetChanged()
+                    View.VISIBLE
+                } else {
+                    recycleView.visibility = View.GONE
+                    View.GONE
+                }
+
+                newValue = p0.toString()
+                clearButton.visibility = clearButtonVisibly(p0)
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+        }
+        inputEditText.addTextChangedListener(simpleTextWatcher)
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            history.visibility =
+                if (hasFocus && inputEditText.text.isEmpty()) View.VISIBLE else View.GONE
+        }
+
+        clearButton.setOnClickListener {
+            val view: View? = this.currentFocus
+            if (view != null) {
+                val inputMethodManager =
+                    getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                 inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
             }
             inputEditText.setText("")
             tracks.clear()
+            historyAdapter.notifyDataSetChanged()
             adapter.notifyDataSetChanged()
-            notFound.visibility=View.GONE
-            notInternet.visibility= View.GONE
+            //historyAdapter.notifyDataSetChanged()
+            notFound.visibility = View.GONE
+            notInternet.visibility = View.GONE
 
         }
-        val simpleTextWatcher=object:TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                newValue=s.toString()
-                clearButton.visibility=clearButtonVisibly(s)
-            }
-            override fun afterTextChanged(s: Editable?) {
-            }
-        }
-        inputEditText.addTextChangedListener(simpleTextWatcher)
-        recycleView=findViewById<RecyclerView>(R.id.recyclerView)
-        recycleView.layoutManager= LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false)
-        adapter.tracks=tracks
-        recycleView.adapter= adapter
-        notFound=findViewById<LinearLayout>(R.id.not_found)
-        notInternet=findViewById<LinearLayout>(R.id.not_internet)
-        updateButton=findViewById<Button>(R.id.update_button)
+        recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        adapter.tracks = tracks
+        recycleView.adapter = adapter
+
         updateButton.setOnClickListener {
             search()
         }
+        clearHistory.setOnClickListener {
+            historyTracks.clear()
+            historyAdapter.notifyDataSetChanged()
+        }
+
+        historyRecycleView.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        historyRecycleView.adapter=historyAdapter
+        historyAdapter.tracks=historyTracks
+
+        val sharedPreferences = getSharedPreferences("list", MODE_PRIVATE)
+        listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            if (key == new_key) {
+                val track = sharedPreferences?.getString(new_key, null)
+                if (track != null) {
+                    historyAdapter.tracks.add(0, createTrackFromJson(track))
+                    adapter.notifyItemInserted(0)
+                }
+
+            }
+        }
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
+
+
+
     }
 
-    private fun clearButtonVisibly(s:CharSequence?):Int {
+    private fun clearButtonVisibly(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
-        }
-        else{
+        } else {
             View.VISIBLE
         }
     }
@@ -114,34 +171,59 @@ class SearchActivity : AppCompatActivity() {
         const val VALUE = "VALUE"
         const val VALUE_DEF = ""
     }
-    private fun search(){
-        playlistService.search(inputEditText.text.toString()).enqueue(object : Callback<PlaylistResponse>{
-            override fun onResponse(
-                call: Call<PlaylistResponse?>,
-                response: Response<PlaylistResponse?>
-            ) {
-                if(response.code()==200){
-                    tracks.clear()
 
-                    if(response.body()?.results?.isNotEmpty()==true){
-                        tracks.addAll(response?.body()?.results!!)
-                    }else{
-                        notFound.visibility= View.VISIBLE
+    private fun search() {
+        playlistService.search(inputEditText.text.toString())
+            .enqueue(object : Callback<PlaylistResponse> {
+                override fun onResponse(
+                    call: Call<PlaylistResponse?>,
+                    response: Response<PlaylistResponse?>
+                ) {
+                    if (response.code() == 200) {
+                        tracks.clear()
+
+                        if (response.body()?.results?.isNotEmpty() == true) {
+                            tracks.addAll(response.body()?.results!!)
+                            recycleView.visibility = View.VISIBLE
+                        } else {
+                            recycleView.visibility = View.GONE
+                            history.visibility = View.GONE
+                            notFound.visibility = View.VISIBLE
+                        }
+                        adapter.notifyDataSetChanged()
                     }
-                    adapter.notifyDataSetChanged()
                 }
-            }
 
-            override fun onFailure(
-                call: Call<PlaylistResponse?>,
-                t: Throwable
-            ) {
-                tracks.clear()
-                adapter.notifyDataSetChanged()
-                notInternet.visibility= View.VISIBLE
-            }
+                override fun onFailure(
+                    call: Call<PlaylistResponse?>,
+                    t: Throwable
+                ) {
+                    tracks.clear()
+                    adapter.notifyDataSetChanged()
+                    recycleView.visibility = View.GONE
+                    history.visibility = View.GONE
+                    notInternet.visibility = View.VISIBLE
+                }
 
-        })
+            })
+    }
+    override fun onClick(track: Track) {
+        Toast.makeText(this,"Save", Toast.LENGTH_LONG).show()
+        historyTracks.removeAll { it.trackId == track.trackId }
+        historyTracks.add(0, track)
+        if (historyTracks.size > 9)
+        {        historyTracks.subList(9, historyTracks.size).clear()    }
+//        sharedPreferences.edit {
+//            putString(new_key, createJsonFromTrack(track))
+//        }
+    }
+    private fun createJsonFromTrack(track: Track): String {
+        return Gson().toJson(track)
     }
 
+    private fun createTrackFromJson(json: String): Track {
+        return Gson().fromJson(json, Track::class.java)
+    }
 }
+
+

@@ -45,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 >
-                <androidx.appcompat.widget.SwitchCompat
+                <com.google.android.material.switchmaterial.SwitchMaterial
                     android:fontFamily="@font/ys_display_medium"
                     android:id="@+id/switch1"
                     android:textAllCaps="false"
@@ -59,7 +59,6 @@
                     android:text="@string/light_theme"
                     android:textColor="?attr/colorSecondary"
                     android:textSize="@dimen/textSize"
-                    tools:ignore="RtlSymmetry"
                     app:thumbTint="@color/switch_thumb_color"
                     app:trackTint="@color/switch_track_color"/>
             </FrameLayout>

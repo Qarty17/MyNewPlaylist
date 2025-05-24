@@ -101,7 +101,7 @@ class SearchActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
-                history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() != true) {
+                history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() == true && searchHistory.getHistory()!=null) {
                     recycleView.visibility = View.GONE
                     historyAdapter.tracks=searchHistory.getHistory()
                     historyAdapter.notifyDataSetChanged()

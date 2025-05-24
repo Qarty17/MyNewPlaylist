@@ -1,64 +1,76 @@
 package com.example.mynewplaylist
 
+import android.content.ClipData.Item
 import android.content.Context
 import android.content.SharedPreferences
 import android.widget.Toast
 import com.google.gson.Gson
 import androidx.core.content.edit
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.reflect.TypeToken
 
 class SearchHistory(context: Context){
-    var historyTracks= ArrayList<Track>()
-    private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
-    //lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
-    //private val sharedPreferences: SharedPreferences=context.getSharedPreferences("name", Context.MODE_PRIVATE)
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
+    private val gson = Gson()
+    private val maxHistorySize = 10
+
     fun getHistory(): ArrayList<Track> {
-
-
-
-
-
-        listener= SharedPreferences.OnSharedPreferenceChangeListener{sharedPreferences,key->
-            if (key==new_key){
-                val json = sharedPreferences.getString(new_key, null)
-                if (json!=null){
-                    val track=createTrackFromJson(json)
-                    historyTracks.add(track)
-                }
-            }
+        val json = sharedPreferences.getString(new_key, null)
+        return if (json != null) {
+            val type = object : TypeToken<ArrayList<Track>>() {}.type
+            gson.fromJson(json, type) ?: ArrayList()
+        } else {
+            ArrayList()
         }
-        //sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-
-        return historyTracks
     }
-//    fun getHistory(): ArrayList<Track> {
-//        listener= SharedPreferences.OnSharedPreferenceChangeListener{sharedPreferences,key->
-//            if(key==new_key){
-//                val track=sharedPreferences?.getString(new_key,null)
-//                if (track!=null){
-//                    historyAdapter.tracks.add(0,createTrackFromJson(track))
-//                    historyAdapter.notifyItemInserted(0)
-//                }
-//
-//            }
-//        }
-//        sharedPreferences.registerOnSharedPreferenceChangeListener (listener)
-//        historyAdapter.tracks=historyTracks
-//        return historyTracks
-//    }
+
     fun onTrackClick(track: Track) {
-
-        historyTracks.removeAll { it.trackId == track.trackId }
-        historyTracks.add(0, track)
-        if (historyTracks.size > 9)
-        {        historyTracks.subList(9, historyTracks.size).clear()    }
-        //sharedPreferences.edit{ putString(new_key, createJsonFromTrack(track)) }
-    }
-    private fun createJsonFromTrack(track: Track): String {
-        return Gson().toJson(track)
+        val history = getHistory()
+        history.removeAll { it.trackId == track.trackId }
+        history.add(0, track)
+        if (history.size > maxHistorySize) {
+            history.subList(maxHistorySize, history.size).clear()
+        }
+        saveHistory(history)
     }
 
-    private fun createTrackFromJson(json: String?): Track {
-        return Gson().fromJson(json, Track::class.java)
+    fun clearHistory() {
+        sharedPreferences.edit().remove(new_key).apply()
+    }
+
+    private fun saveHistory(history: ArrayList<Track>) {
+        val json = gson.toJson(history)
+        sharedPreferences.edit().putString(new_key, json).apply()
     }
 }
+//    var historyTracks: ArrayList<Track> = ArrayList<Track>()
+//    //private lateinit var listener: SharedPreferences.OnSharedPreferenceChangeListener
+//    val sharedPreferences: SharedPreferences=context.getSharedPreferences("name", Context.MODE_PRIVATE)
+//    private val gson = Gson()
+//    fun getHistory(): ArrayList<Track> {
+//        val json = sharedPreferences.getString(new_key, null)
+//        return if (json != null) {
+//            val type = object : TypeToken<ArrayList<Track>>() {}.type
+//            gson.fromJson(json, type) ?: ArrayList<Track>()
+//        } else {
+//            ArrayList<Track>()
+//        }
+//    }
+//    fun clearHistory() {
+//        sharedPreferences.edit { remove(new_key) }
+//    }
+//
+//    fun onTrackClick(track: Track) {
+//        val history=getHistory()
+//        history.removeAll { it.trackId == track.trackId }
+//        history.add(0, track)
+//        if (history.size > 9)
+//        {        history.subList(9, history.size).clear()    }
+//        saveHistory(history)
+//    }
+//    private fun saveHistory(history: ArrayList<Track>){
+//        val json=gson.toJson(history)
+//        sharedPreferences.edit{ putString(new_key, json) }
+//    }
+

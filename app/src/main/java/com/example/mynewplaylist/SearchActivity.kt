@@ -59,6 +59,7 @@ class SearchActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             newValue = savedInstanceState.getString(VALUE, VALUE_DEF)
         }
+
         backButton = findViewById<Button>(R.id.back2)
         inputEditText = findViewById<EditText>(R.id.input_edittext)
         clearButton = findViewById<ImageView>(R.id.clearIcon)
@@ -82,6 +83,11 @@ class SearchActivity : AppCompatActivity() {
         historyRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         historyRecycleView.adapter = historyAdapter
         historyAdapter.tracks = searchHistory.getHistory()
+        if (searchHistory.getHistory().isNotEmpty()){
+            history.visibility= View.VISIBLE
+        }else{
+            history.visibility= View.GONE
+        }
         backButton.setOnClickListener {
             finish()
             historyAdapter.tracks=method1()

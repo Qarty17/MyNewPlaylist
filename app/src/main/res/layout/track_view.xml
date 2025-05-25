@@ -46,13 +46,14 @@
                     android:id="@+id/artist_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxWidth="60dp"
                     android:layout_gravity="start"
-                    android:textColor="?attr/colorSecondaryVariant"
-                    android:textSize="11sp"
-                    android:maxLines="1"
                     android:ellipsize="end"
-                    />
+                    android:maxEms="15"
+                    android:maxLines="1"
+                    android:textColor="?attr/colorSecondaryVariant"
+                    android:textSize="11sp" />
+
+
 
                 <ImageView
                     android:layout_width="wrap_content"

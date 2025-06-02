@@ -16,5 +16,11 @@
     <string name="update">update</string>
     <string name="history">you were looking for</string>
     <string name="clear_history">clear the history</string>
+    <string name="_0_29">0:29</string>
+    <string name="duration">Duration</string>
+    <string name="album">Album</string>
+    <string name="year">Year</string>
+    <string name="genre">Genre</string>
+    <string name="Country">Country</string>
 
 </resources>

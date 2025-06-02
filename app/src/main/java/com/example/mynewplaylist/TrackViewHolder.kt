@@ -21,7 +21,7 @@ class TrackViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(LayoutInflater
     private val thisArtworkUrl=itemView.findViewById<ImageView>(R.id.artwork_url)
 
 
-    fun bind(model: Track){
+    fun bind(model: Track,listener: TrackAdapter.Listener){
         thisTrackName.text=model.trackName
         thisTrackTime.text=SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
         thisArtistName.text=model.artistName

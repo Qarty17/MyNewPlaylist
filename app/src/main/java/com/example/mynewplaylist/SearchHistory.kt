@@ -2,6 +2,7 @@ package com.example.mynewplaylist
 
 import android.content.ClipData.Item
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.widget.Toast
 import com.google.gson.Gson
@@ -26,6 +27,7 @@ class SearchHistory(context: Context){
     }
 
     fun onTrackClick(track: Track) {
+
         val history = getHistory()
         history.removeAll { it.trackId == track.trackId }
         history.add(0, track)

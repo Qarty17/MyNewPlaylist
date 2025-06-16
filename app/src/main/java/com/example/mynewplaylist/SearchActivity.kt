@@ -1,7 +1,8 @@
 package com.example.mynewplaylist
 
 import android.content.Context
-import android.content.SharedPreferences
+import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,20 +15,19 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.collection.ArraySet
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import androidx.core.content.edit
-import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 const val new_key="key_from_list"
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
+
     private lateinit var backButton: Button
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
@@ -71,13 +71,13 @@ class SearchActivity : AppCompatActivity() {
         clearHistory = findViewById<Button>(R.id.history_button)
         historyRecycleView = findViewById<RecyclerView>(R.id.recyclerViewHistory)
         searchHistory= SearchHistory(this)
-        adapter= TrackAdapter{track->
+        adapter= TrackAdapter(this){track->
             searchHistory.onTrackClick(track)
         }
         recycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter.tracks = tracks
         recycleView.adapter = adapter
-        historyAdapter= TrackAdapter{track->
+        historyAdapter= TrackAdapter(this){track->
             searchHistory.onTrackClick(track)
         }
         historyRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -154,9 +154,6 @@ class SearchActivity : AppCompatActivity() {
             notInternet.visibility = View.GONE
 
         }
-
-
-
         updateButton.setOnClickListener {
             search()
         }
@@ -167,21 +164,8 @@ class SearchActivity : AppCompatActivity() {
             history.visibility=View.GONE
 
         }
-//        val sharedPreferences = getSharedPreferences("list", MODE_PRIVATE)
-//        listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-//            if (key == new_key) {
-//                val track = sharedPreferences?.getString(new_key, null)
-//                if (track != null) {
-//                    historyAdapter.tracks.add(0, createTrackFromJson(track))
-//                    adapter.notifyItemInserted(0)
-//                }
-//
-//            }
-//        }
-//        sharedPreferences.registerOnSharedPreferenceChangeListener(listener)
-
-
     }
+
     private fun clearButtonVisibly(s: CharSequence?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
@@ -231,29 +215,37 @@ class SearchActivity : AppCompatActivity() {
             })
     }
 
-
+//    fun isNetwork(context: Context): Boolean {
+//        val cm = context
+//            .getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+//        val netInfo = cm.getActiveNetworkInfo()
+//        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+//            return true
+//        }
+//        return false
+//    }
     fun method1(): ArrayList<Track>{
         searchHistory= SearchHistory(this)
         return searchHistory.getHistory()
     }
-}
-//    override fun onClick(track: Track) {
-//        Toast.makeText(this,"Save", Toast.LENGTH_LONG).show()
-//        historyTracks.removeAll { it.trackId == track.trackId }
-//        historyTracks.add(0, track)
-//        if (historyTracks.size > 9)
-//        {        historyTracks.subList(9, historyTracks.size).clear()    }
-////        sharedPreferences.edit {
-////            putString(new_key, createJsonFromTrack(track))
-////        }
-//    }
-//    private fun createJsonFromTrack(track: Track): String {
-//        return Gson().toJson(track)
-//    }
-//
-    private fun createTrackFromJson(json: String): Track {
-        return Gson().fromJson(json, Track::class.java)
+
+    override fun onClick(track: Track) {
+        val intent= Intent(this, AudioplayerActivity::class.java)
+        intent.putExtra("name",track.trackName)
+        intent.putExtra("name_artist",track.artistName)
+        intent.putExtra("duration",SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
+        intent.putExtra("album",track.collectionName)
+        intent.putExtra("year",track.releaseDate)
+        //intent.putExtra("year",SimpleDateFormat("yyyy", Locale.getDefault()).format(track.releaseDate))
+        intent.putExtra("genre",track.primaryGenreName)
+        intent.putExtra("country",track.country)
+        intent.putExtra("artwork",track.artworkUrl100)
+        startActivity(intent)
     }
-//}
+    override fun addName(track: Track): String{
+        return track.trackName
+    }
+}
+
 
 

@@ -1,11 +1,12 @@
 package com.example.mynewplaylist
 
+
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
-
 import android.widget.Button
-
-
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 
@@ -29,6 +30,6 @@ class MainActivity : AppCompatActivity() {
             val button1Intent=Intent(this,SettingsActivity::class.java)
             startActivity(button1Intent)
         }
-
     }
+
 }

@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -13,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +31,10 @@ import java.util.Locale
 
 const val new_key="key_from_list"
 class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
-
+    private val searchRunnable= Runnable { search() }
+    private var isClickAllowed = true
+    private val handler:Handler =Handler(Looper.getMainLooper())
+    private lateinit var progressBar: ProgressBar
     private lateinit var backButton: Button
     private lateinit var inputEditText: EditText
     private lateinit var clearButton: ImageView
@@ -59,7 +66,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         if (savedInstanceState != null) {
             newValue = savedInstanceState.getString(VALUE, VALUE_DEF)
         }
-
+        progressBar=findViewById(R.id.progress_bar)
         backButton = findViewById<Button>(R.id.back2)
         inputEditText = findViewById<EditText>(R.id.input_edittext)
         clearButton = findViewById<ImageView>(R.id.clearIcon)
@@ -78,7 +85,10 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         adapter.tracks = tracks
         recycleView.adapter = adapter
         historyAdapter= TrackAdapter(this){track->
-            searchHistory.onTrackClick(track)
+            if(clickDebounce()){
+                searchHistory.onTrackClick(track)
+            }
+
         }
         historyRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         historyRecycleView.adapter = historyAdapter
@@ -89,7 +99,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             history.visibility= View.GONE
         }
         backButton.setOnClickListener {
-            finish()
+            val intent=Intent(this,MainActivity::class.java)
+            startActivity(intent)
             historyAdapter.tracks=method1()
         }
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -106,8 +117,13 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-
+                if(inputEditText.text.isNotEmpty()){
+                    progressBar.visibility=View.VISIBLE
+                    searchDebounce()
+                }
                 history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) {
+
+
                     recycleView.visibility = View.GONE
                     historyAdapter.tracks=searchHistory.getHistory()
                     historyAdapter.notifyDataSetChanged()
@@ -127,6 +143,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
+
             history.visibility =
                 if (hasFocus && inputEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
 
@@ -166,7 +183,22 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
     }
 
+    private fun clickDebounce():Boolean{
+        val current=isClickAllowed
+        if(isClickAllowed){
+            isClickAllowed=false
+            handler.postDelayed({isClickAllowed=true},1000L)
+        }
+        return current
+    }
+    private fun searchDebounce(){
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable,2000L)
+
+
+    }
     private fun clearButtonVisibly(s: CharSequence?): Int {
+
         return if (s.isNullOrEmpty()) {
             View.GONE
         } else {
@@ -174,37 +206,43 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
     }
 
-    companion object {
-        const val VALUE = "VALUE"
-        const val VALUE_DEF = ""
-    }
+    
 
     private fun search() {
+        progressBar.visibility=View.VISIBLE
         playlistService.search(inputEditText.text.toString())
             .enqueue(object : Callback<PlaylistResponse> {
                 override fun onResponse(
                     call: Call<PlaylistResponse?>,
                     response: Response<PlaylistResponse?>
                 ) {
-                    if (response.code() == 200) {
-                        tracks.clear()
+                    if(inputEditText.text.isNotEmpty()){
+                        if (response.code() == 200) {
+                            tracks.clear()
 
-                        if (response.body()?.results?.isNotEmpty() == true) {
-                            tracks.addAll(response.body()?.results!!)
-                            recycleView.visibility = View.VISIBLE
-                        } else {
-                            recycleView.visibility = View.GONE
-                            history.visibility = View.GONE
-                            notFound.visibility = View.VISIBLE
+                            if (response.body()?.results?.isNotEmpty() == true) {
+                                progressBar.visibility=View.GONE
+                                tracks.addAll(response.body()?.results!!)
+                                recycleView.visibility = View.VISIBLE
+                            } else {
+                                progressBar.visibility=View.GONE
+                                recycleView.visibility = View.GONE
+                                history.visibility = View.GONE
+                                notFound.visibility = View.VISIBLE
+
+
+                            }
+                            adapter.notifyDataSetChanged()
                         }
-                        adapter.notifyDataSetChanged()
                     }
+
                 }
 
                 override fun onFailure(
                     call: Call<PlaylistResponse?>,
                     t: Throwable
                 ) {
+
                     tracks.clear()
                     adapter.notifyDataSetChanged()
                     recycleView.visibility = View.GONE
@@ -224,23 +262,37 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 //        }
 //        return false
 //    }
-    fun method1(): ArrayList<Track>{
+private fun method1(): ArrayList<Track>{
         searchHistory= SearchHistory(this)
         return searchHistory.getHistory()
     }
 
     override fun onClick(track: Track) {
         val intent= Intent(this, AudioplayerActivity::class.java)
-        intent.putExtra("name",track.trackName)
-        intent.putExtra("name_artist",track.artistName)
-        intent.putExtra("duration",SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
-        intent.putExtra("album",track.collectionName)
-        intent.putExtra("year",track.releaseDate)
+        intent.putExtra(NAME,track.trackName)
+        intent.putExtra(NAME_ARTIST,track.artistName)
+        intent.putExtra(DURATION,SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
+        intent.putExtra(ALBUM,track.collectionName)
+        intent.putExtra(YEAR,track.releaseDate)
         //intent.putExtra("year",SimpleDateFormat("yyyy", Locale.getDefault()).format(track.releaseDate))
-        intent.putExtra("genre",track.primaryGenreName)
-        intent.putExtra("country",track.country)
-        intent.putExtra("artwork",track.artworkUrl100)
+        intent.putExtra(GENRE,track.primaryGenreName)
+        intent.putExtra(COUNTRY,track.country)
+        intent.putExtra(ARTWORK,track.artworkUrl100)
+        intent.putExtra("previewUrl",track.previewUrl)
         startActivity(intent)
+    }
+    companion object {
+        const val NAME="name"
+        const val VALUE = "VALUE"
+        const val VALUE_DEF = ""
+        const val NAME_ARTIST="name_artist"
+        const val DURATION="duration"
+        const val ALBUM="album"
+        const val YEAR="year"
+        const val GENRE="genre"
+        const val COUNTRY="country"
+        const val ARTWORK="artwork"
+        const val PREVIEWURL="previewUrl"
     }
     override fun addName(track: Track): String{
         return track.trackName

@@ -117,19 +117,24 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             }
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                if(inputEditText.text.isNotEmpty()){
+                if(p0?.isNotEmpty() == true){
                     progressBar.visibility=View.VISIBLE
+                    notFound.visibility=View.GONE
+                    notInternet.visibility=View.GONE
                     searchDebounce()
+                }else{
+                    progressBar.visibility=View.GONE
                 }
                 history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) {
 
-
+                    progressBar.visibility=View.GONE
                     recycleView.visibility = View.GONE
                     historyAdapter.tracks=searchHistory.getHistory()
                     historyAdapter.notifyDataSetChanged()
                     adapter.notifyDataSetChanged()
                     View.VISIBLE
                 } else {
+
                     recycleView.visibility = View.GONE
                     View.GONE
                 }
@@ -143,7 +148,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
-
+            if(inputEditText.text.isEmpty()){
+            }
             history.visibility =
                 if (hasFocus && inputEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
 
@@ -164,6 +170,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             }else{
                 history.visibility= View.GONE
             }
+            progressBar.visibility=View.GONE
             historyAdapter.tracks=searchHistory.getHistory()
             historyAdapter.notifyDataSetChanged()
 
@@ -209,7 +216,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
     
 
     private fun search() {
-        progressBar.visibility=View.VISIBLE
         playlistService.search(inputEditText.text.toString())
             .enqueue(object : Callback<PlaylistResponse> {
                 override fun onResponse(

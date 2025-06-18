@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import kotlinx.coroutines.runInterruptible
 import org.w3c.dom.Text
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -34,6 +35,8 @@ class AudioplayerActivity : AppCompatActivity() {
     private lateinit var play:ImageButton
     private lateinit var timer:TextView
     private var mediaPlayer=MediaPlayer()
+    private lateinit var newThread:Thread
+    private var stop=false
     //private var url:String=intent.extras?.getString("previewUrl").toString()
     //private var url = "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/ac/c7/d1/acc7d13f-6634-495f-caf6-491eccb505e8/mzaf_4002676889906514534.plus.aac.p.m4a"
 
@@ -43,8 +46,7 @@ class AudioplayerActivity : AppCompatActivity() {
         setContentView(R.layout.audio_player)
         backButton=findViewById<Button>(R.id.menu_button)
         backButton.setOnClickListener {
-            val intent=Intent(this,SearchActivity::class.java)
-            startActivity(intent)
+            finish()
         }
         play=findViewById(R.id.view2)
         trackName=findViewById<TextView>(R.id.track_name_for_audio)
@@ -77,17 +79,26 @@ class AudioplayerActivity : AppCompatActivity() {
         //var newValue=timer.text.toString()
         play.setOnClickListener{
 
-            val newThread=Thread{
+            newThread=Thread{
                 handler?.postDelayed(object :Runnable{
                     override fun run() {
-                        timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-                        handler?.postDelayed(this,1_000L)
+                        if(!stop) {
+                            timer.text = SimpleDateFormat(
+                                "m:ss",
+                                Locale.getDefault()
+                            ).format(mediaPlayer.currentPosition)
+                            handler?.postDelayed(this, 300L)
+                        }
+
+
                     }
 
-                },1_000L
+                },300L
                 )
             }
+
             newThread.start()
+
             playbackControl()
         }
 
@@ -143,15 +154,17 @@ class AudioplayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         pausePlayer()
+
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mediaPlayer.release()
-    }
+        stop=true
 
-    override fun onStop() {
-        super.onStop()
 
     }
+
+
 }

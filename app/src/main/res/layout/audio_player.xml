@@ -117,11 +117,12 @@
                 app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
+
                 android:fontFamily="@font/ys_display_medium"
                 android:id="@+id/timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/_0_29"
+                tools:text="0:30"
                 android:layout_marginBottom="30dp"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -250,7 +251,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/this_year"
-                tools:text="Yesterday (Remastered )qqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+                tools:text="Yesterday (Remastered )"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:gravity="end"

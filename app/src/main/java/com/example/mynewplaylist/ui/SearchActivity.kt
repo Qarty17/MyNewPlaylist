@@ -1,8 +1,6 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.ui
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,21 +15,23 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.example.mynewplaylist.Creator
+import com.example.mynewplaylist.R
+import com.example.mynewplaylist.domain.api.TrackIntercator
+import com.example.mynewplaylist.domain.models.Track
+import com.example.mynewplaylist.presentation.SearchHistory
+import com.example.mynewplaylist.presentation.TrackAdapter
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 const val new_key="key_from_list"
 class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
-    private val searchRunnable= Runnable { search() }
+    private val searchRunnable= Runnable {
+        searchCreate()
+    }
     private var isClickAllowed = true
     private val handler:Handler =Handler(Looper.getMainLooper())
     private lateinit var progressBar: ProgressBar
@@ -47,18 +47,12 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
     private lateinit var updateButton: Button
     private lateinit var clearHistory: Button
     lateinit var searchHistory: SearchHistory
-    private val playlistBaseUrl = "https://itunes.apple.com"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(playlistBaseUrl)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private var playlistService = retrofit.create(PlaylistApi::class.java)
     private val tracks = ArrayList<Track>()
     private lateinit var adapter: TrackAdapter
-
+    private val creator=Creator
+    private val provider=creator.provideTrackInteractor()
     var newValue = VALUE_DEF
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_search)
@@ -67,17 +61,19 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             newValue = savedInstanceState.getString(VALUE, VALUE_DEF)
         }
         progressBar=findViewById(R.id.progress_bar)
-        backButton = findViewById<Button>(R.id.back2)
-        inputEditText = findViewById<EditText>(R.id.input_edittext)
-        clearButton = findViewById<ImageView>(R.id.clearIcon)
-        recycleView = findViewById<RecyclerView>(R.id.recyclerView)
-        notFound = findViewById<LinearLayout>(R.id.not_found)
-        notInternet = findViewById<LinearLayout>(R.id.not_internet)
-        updateButton = findViewById<Button>(R.id.update_button)
-        history = findViewById<LinearLayout>(R.id.history)
-        clearHistory = findViewById<Button>(R.id.history_button)
-        historyRecycleView = findViewById<RecyclerView>(R.id.recyclerViewHistory)
+        backButton = findViewById(R.id.back2)
+        inputEditText = findViewById(R.id.input_edittext)
+        clearButton = findViewById(R.id.clearIcon)
+        recycleView = findViewById(R.id.recyclerView)
+        notFound = findViewById(R.id.not_found)
+        notInternet = findViewById(R.id.not_internet)
+        updateButton = findViewById(R.id.update_button)
+        history = findViewById(R.id.history)
+        clearHistory = findViewById(R.id.history_button)
+        historyRecycleView = findViewById(R.id.recyclerViewHistory)
         searchHistory= SearchHistory(this)
+
+
         adapter= TrackAdapter(this){track->
             searchHistory.onTrackClick(track)
         }
@@ -92,20 +88,23 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
         historyRecycleView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         historyRecycleView.adapter = historyAdapter
-        historyAdapter.tracks = searchHistory.getHistory()
-        if (searchHistory.getHistory().isNotEmpty()){
+        historyAdapter.tracks = searchHistory.manager.getHistory()
+        if (searchHistory.manager.getHistory().isNotEmpty()){
             history.visibility= View.VISIBLE
         }else{
             history.visibility= View.GONE
         }
         backButton.setOnClickListener {
-            val intent=Intent(this,MainActivity::class.java)
+            val intent=Intent(this, MainActivity::class.java)
             startActivity(intent)
             historyAdapter.tracks=method1()
         }
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                search()
+                //search()
+                //searchCreate()
+
+
                 true
             }
             false
@@ -125,11 +124,11 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
                 }else{
                     progressBar.visibility=View.GONE
                 }
-                history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() == true && searchHistory.getHistory().isNotEmpty()) {
+                history.visibility = if (inputEditText.hasFocus() && p0?.isEmpty() == true && searchHistory.manager.getHistory().isNotEmpty()) {
 
                     progressBar.visibility=View.GONE
                     recycleView.visibility = View.GONE
-                    historyAdapter.tracks=searchHistory.getHistory()
+                    historyAdapter.tracks=searchHistory.manager.getHistory()
                     historyAdapter.notifyDataSetChanged()
                     adapter.notifyDataSetChanged()
                     View.VISIBLE
@@ -151,7 +150,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             if(inputEditText.text.isEmpty()){
             }
             history.visibility =
-                if (hasFocus && inputEditText.text.isEmpty() && searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+                if (hasFocus && inputEditText.text.isEmpty() && searchHistory.manager.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
 
         }
 
@@ -165,13 +164,13 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             inputEditText.setText("")
             tracks.clear()
             adapter.notifyDataSetChanged()
-            if (searchHistory.getHistory().isNotEmpty()){
+            if (searchHistory.manager.getHistory().isNotEmpty()){
                 history.visibility= View.VISIBLE
             }else{
                 history.visibility= View.GONE
             }
             progressBar.visibility=View.GONE
-            historyAdapter.tracks=searchHistory.getHistory()
+            historyAdapter.tracks=searchHistory.manager.getHistory()
             historyAdapter.notifyDataSetChanged()
 
             notFound.visibility = View.GONE
@@ -179,10 +178,11 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
         }
         updateButton.setOnClickListener {
-            search()
+            searchDebounce()
+            creator.provideTrackInteractor()
         }
         clearHistory.setOnClickListener {
-            searchHistory.clearHistory()
+            searchHistory.manager.clearHistory()
             historyAdapter.tracks.clear()
             historyAdapter.notifyDataSetChanged()
             history.visibility=View.GONE
@@ -215,62 +215,84 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
     
 
-    private fun search() {
-        playlistService.search(inputEditText.text.toString())
-            .enqueue(object : Callback<PlaylistResponse> {
-                override fun onResponse(
-                    call: Call<PlaylistResponse?>,
-                    response: Response<PlaylistResponse?>
-                ) {
-                    if(inputEditText.text.isNotEmpty()){
-                        if (response.code() == 200) {
-                            tracks.clear()
+//    private fun search() {
+//
+//        playlistService.search(inputEditText.text.toString())
+//            .enqueue(object : Callback<PlaylistResponse> {
+//                override fun onResponse(
+//                    call: Call<PlaylistResponse?>,
+//                    response: Response<PlaylistResponse?>
+//                ) {
+//                    if(inputEditText.text.isNotEmpty()){
+//                        if (response.code() == 200) {
+//                            tracks.clear()
+//
+//                            if (response.body()?.results?.isNotEmpty() == true) {
+//                                progressBar.visibility=View.GONE
+//                                tracks.addAll(response.body()?.results!!)
+//                                recycleView.visibility = View.VISIBLE
+//                            } else {
+//                                progressBar.visibility=View.GONE
+//                                recycleView.visibility = View.GONE
+//                                history.visibility = View.GONE
+//                                notFound.visibility = View.VISIBLE
+//
+//
+//                            }
+//                            adapter.notifyDataSetChanged()
+//                        }
+//                    }
+//
+//                }
+//
+//                override fun onFailure(
+//                    call: Call<PlaylistResponse?>,
+//                    t: Throwable
+//                ) {
+//
+//                    tracks.clear()
+//                    adapter.notifyDataSetChanged()
+//                    recycleView.visibility = View.GONE
+//                    history.visibility = View.GONE
+//                    notInternet.visibility = View.VISIBLE
+//                }
+//
+//            })
+//   }
 
-                            if (response.body()?.results?.isNotEmpty() == true) {
-                                progressBar.visibility=View.GONE
-                                tracks.addAll(response.body()?.results!!)
-                                recycleView.visibility = View.VISIBLE
-                            } else {
-                                progressBar.visibility=View.GONE
-                                recycleView.visibility = View.GONE
-                                history.visibility = View.GONE
-                                notFound.visibility = View.VISIBLE
+
+private fun searchCreate(){
+        provider.searchTracks(inputEditText.text.toString(), object :TrackIntercator.TrackConsumer{
+            override fun consume(foundTracks: List<Track>) {
+                runOnUiThread{
+                    if (foundTracks.isNotEmpty()) {
+                        progressBar.visibility=View.GONE
+                        tracks.addAll(foundTracks)
+                        Log.d("tracks",tracks.toString())
+                        recycleView.visibility = View.VISIBLE
+                    } else {
+
+                        progressBar.visibility=View.GONE
+                        recycleView.visibility = View.GONE
+                        history.visibility = View.GONE
+                        notFound.visibility = View.VISIBLE
 
 
-                            }
-                            adapter.notifyDataSetChanged()
-                        }
                     }
-
-                }
-
-                override fun onFailure(
-                    call: Call<PlaylistResponse?>,
-                    t: Throwable
-                ) {
-
-                    tracks.clear()
                     adapter.notifyDataSetChanged()
-                    recycleView.visibility = View.GONE
-                    history.visibility = View.GONE
-                    notInternet.visibility = View.VISIBLE
                 }
 
-            })
-    }
+            }
+        })
 
-//    fun isNetwork(context: Context): Boolean {
-//        val cm = context
-//            .getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-//        val netInfo = cm.getActiveNetworkInfo()
-//        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-//            return true
-//        }
-//        return false
-//    }
+
+
+
+
+}
 private fun method1(): ArrayList<Track>{
         searchHistory= SearchHistory(this)
-        return searchHistory.getHistory()
+        return searchHistory.manager.getHistory()
     }
 
     override fun onClick(track: Track) {
@@ -280,11 +302,10 @@ private fun method1(): ArrayList<Track>{
         intent.putExtra(DURATION,SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
         intent.putExtra(ALBUM,track.collectionName)
         intent.putExtra(YEAR,track.releaseDate)
-        //intent.putExtra("year",SimpleDateFormat("yyyy", Locale.getDefault()).format(track.releaseDate))
         intent.putExtra(GENRE,track.primaryGenreName)
         intent.putExtra(COUNTRY,track.country)
         intent.putExtra(ARTWORK,track.artworkUrl100)
-        intent.putExtra("previewUrl",track.previewUrl)
+        intent.putExtra(PREVIEWURL,track.previewUrl)
         startActivity(intent)
     }
     companion object {
@@ -302,6 +323,11 @@ private fun method1(): ArrayList<Track>{
     }
     override fun addName(track: Track): String{
         return track.trackName
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(searchRunnable)
     }
 }
 

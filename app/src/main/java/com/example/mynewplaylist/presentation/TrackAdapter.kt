@@ -1,8 +1,9 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.presentation
 
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mynewplaylist.domain.models.Track
 
 class TrackAdapter(val listener: Listener, private val onTrackClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
 
@@ -10,7 +11,7 @@ class TrackAdapter(val listener: Listener, private val onTrackClick: (Track) -> 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TrackViewHolder= TrackViewHolder(parent)
+    ): TrackViewHolder = TrackViewHolder(parent)
 
     override fun onBindViewHolder(
         holder: TrackViewHolder,

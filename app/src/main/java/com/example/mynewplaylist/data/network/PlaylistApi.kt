@@ -1,5 +1,6 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.data.network
 
+import com.example.mynewplaylist.data.dto.PlaylistResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

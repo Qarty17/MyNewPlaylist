@@ -1,17 +1,16 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.data.dto
 
-
-
-data class Track (
+class TrackDto(
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Int,
     val artworkUrl100: String,
-    val trackId:Int,
+    val trackId: String,
     val collectionName: String,
     val releaseDate: String,
     val primaryGenreName: String,
     val country: String,
     val previewUrl:String
+) {
 
-)
+}

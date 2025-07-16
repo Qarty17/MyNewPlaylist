@@ -1,13 +1,9 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.ui
 
-import android.annotation.SuppressLint
-import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -15,8 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import kotlinx.coroutines.runInterruptible
-import org.w3c.dom.Text
+import com.example.mynewplaylist.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -136,13 +131,13 @@ class AudioplayerActivity : AppCompatActivity() {
     }
     private fun playbackControl(){
         when(playerState){
-            STATE_PLAYING->{
+            STATE_PLAYING ->{
                 play.setImageDrawable(getDrawable(R.drawable.pause))
                 timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
 
                 pausePlayer()
             }
-            STATE_PAUSED, STATE_PREPARED, STATE_DEFAULT->{
+            STATE_PAUSED, STATE_PREPARED, STATE_DEFAULT ->{
                 play.setImageDrawable(getDrawable(R.drawable.play))
                 timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
 

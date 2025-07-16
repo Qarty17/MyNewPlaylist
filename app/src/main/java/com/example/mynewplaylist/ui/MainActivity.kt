@@ -1,13 +1,11 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.ui
 
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mynewplaylist.R
 
 
 class MainActivity : AppCompatActivity() {
@@ -17,17 +15,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val button1=findViewById<Button>(R.id.search)
         button1.setOnClickListener{
-            val button2Intent=Intent(this,SearchActivity::class.java)
+            val button2Intent=Intent(this, SearchActivity::class.java)
             startActivity(button2Intent)
         }
         val button2=findViewById<Button>(R.id.media)
         button2.setOnClickListener {
-            val button3Intent=Intent(this,MediaActivity::class.java)
+            val button3Intent=Intent(this, MediaActivity::class.java)
             startActivity(button3Intent)
         }
         val button3=findViewById<Button>(R.id.settings)
         button3.setOnClickListener {
-            val button1Intent=Intent(this,SettingsActivity::class.java)
+            val button1Intent=Intent(this, SettingsActivity::class.java)
             startActivity(button1Intent)
         }
     }

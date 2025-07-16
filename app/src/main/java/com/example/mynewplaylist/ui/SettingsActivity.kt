@@ -1,32 +1,28 @@
-package com.example.mynewplaylist
+package com.example.mynewplaylist.ui
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
+import com.example.mynewplaylist.R
+import com.example.mynewplaylist.data.SwitchManager
+import com.example.mynewplaylist.presentation.App
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedPreferences=getSharedPreferences("switch1",MODE_PRIVATE)
-        val editor=sharedPreferences.edit()
+        val manager=SwitchManager(this)
         setContentView(R.layout.activity_settings)
         val backButton = findViewById<Button>(R.id.back)
         backButton.setOnClickListener {
             finish()
         }
         val themeSwitcher=findViewById<SwitchMaterial>(R.id.switch1)
-        themeSwitcher.isChecked=sharedPreferences.getBoolean("switch1",false)
+        themeSwitcher.isChecked=manager.getSavedSwitcher()
         themeSwitcher.setOnCheckedChangeListener { switcher,checked->
-            if(checked){
-                editor.putBoolean("switch1",true)
-            }else{
-                editor.putBoolean("switch1",false)
-            }
-            editor.apply()
+            manager.saveSwitcher(checked)
             (applicationContext as App).switchTheme(checked)
 
 

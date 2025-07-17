@@ -1,6 +1,6 @@
 package com.example.mynewplaylist.ui
 
-import android.media.MediaPlayer
+
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.mynewplaylist.Creator
 import com.example.mynewplaylist.R
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -29,30 +30,26 @@ class AudioplayerActivity : AppCompatActivity() {
     private lateinit var artwork: ImageView
     private lateinit var play:ImageButton
     private lateinit var timer:TextView
-    private var mediaPlayer=MediaPlayer()
+    private var mediaPlayer=Creator.provideMediaPlayerInteractor()
     private lateinit var newThread:Thread
     private var stop=false
-    //private var url:String=intent.extras?.getString("previewUrl").toString()
-    //private var url = "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/ac/c7/d1/acc7d13f-6634-495f-caf6-491eccb505e8/mzaf_4002676889906514534.plus.aac.p.m4a"
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.audio_player)
-        backButton=findViewById<Button>(R.id.menu_button)
+        backButton=findViewById(R.id.menu_button)
         backButton.setOnClickListener {
             finish()
         }
         play=findViewById(R.id.view2)
-        trackName=findViewById<TextView>(R.id.track_name_for_audio)
-        trackAuthor=findViewById<TextView>(R.id.track_artist)
-        trackTime=findViewById<TextView>(R.id.this_duration)
-        trackAlbum=findViewById<TextView>(R.id.this_album)
-        trackYear=findViewById<TextView>(R.id.this_year)
-        trackGenre=findViewById<TextView>(R.id.this_genre)
-        trackCountry=findViewById<TextView>(R.id.this_country)
+        trackName=findViewById(R.id.track_name_for_audio)
+        trackAuthor=findViewById(R.id.track_artist)
+        trackTime=findViewById(R.id.this_duration)
+        trackAlbum=findViewById(R.id.this_album)
+        trackYear=findViewById(R.id.this_year)
+        trackGenre=findViewById(R.id.this_genre)
+        trackCountry=findViewById(R.id.this_country)
         timer=findViewById(R.id.timer)
-        artwork=findViewById<ImageView>(R.id.cover)
+        artwork=findViewById(R.id.cover)
         trackName.text=intent.extras?.getString("name")
         trackAuthor.text=intent.extras?.getString("name_artist")
         trackTime.text=intent.extras?.getString("duration")
@@ -60,8 +57,6 @@ class AudioplayerActivity : AppCompatActivity() {
         trackGenre.text=intent.extras?.getString("genre")
         trackCountry.text=intent.extras?.getString("country")
         trackYear.text=intent.extras?.getString("year")?.substring(0,4)
-        //val url=intent.extras?.getString("previewUrl").toString()
-        //val url = "https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview112/v4/ac/c7/d1/acc7d13f-6634-495f-caf6-491eccb505e8/mzaf_4002676889906514534.plus.aac.p.m4a"
 
         val artworkurl=intent.extras?.getString("artwork")
         val newart=getCoverArtwork(artworkurl)
@@ -70,10 +65,8 @@ class AudioplayerActivity : AppCompatActivity() {
         val url=intent.extras?.getString("previewUrl").toString()
         preparePlayer(url)
         handler=Handler(Looper.getMainLooper())
-        timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-        //var newValue=timer.text.toString()
+        timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
         play.setOnClickListener{
-
             newThread=Thread{
                 handler?.postDelayed(object :Runnable{
                     override fun run() {
@@ -81,7 +74,7 @@ class AudioplayerActivity : AppCompatActivity() {
                             timer.text = SimpleDateFormat(
                                 "m:ss",
                                 Locale.getDefault()
-                            ).format(mediaPlayer.currentPosition)
+                            ).format(mediaPlayer.getCurrentPosition())
                             handler?.postDelayed(this, 300L)
                         }
 
@@ -111,36 +104,26 @@ class AudioplayerActivity : AppCompatActivity() {
     }
     private var playerState= STATE_DEFAULT
     private fun preparePlayer(url:String){
-        mediaPlayer.setDataSource(url)
-        mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener{
-            play.isEnabled=true
-            playerState = STATE_PREPARED
-        }
-        mediaPlayer.setOnCompletionListener {
-            playerState = STATE_PREPARED
-        }
+        mediaPlayer.preparePlayer(play,url)
     }
     private fun startPlayer(){
-        mediaPlayer.start()
+        mediaPlayer.startPlayer()
         playerState= STATE_PLAYING
     }
     private fun pausePlayer(){
-        mediaPlayer.pause()
+        mediaPlayer.pausePlayer()
         playerState= STATE_PAUSED
     }
     private fun playbackControl(){
         when(playerState){
             STATE_PLAYING ->{
                 play.setImageDrawable(getDrawable(R.drawable.pause))
-                timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-
+                timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
                 pausePlayer()
             }
-            STATE_PAUSED, STATE_PREPARED, STATE_DEFAULT ->{
+            STATE_PAUSED,STATE_PREPARED, STATE_DEFAULT ->{
                 play.setImageDrawable(getDrawable(R.drawable.play))
-                timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-
+                timer.text=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
                 startPlayer()
             }
         }
@@ -149,13 +132,11 @@ class AudioplayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         pausePlayer()
-
-
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mediaPlayer.release()
+        mediaPlayer.releasePlayer()
         stop=true
 
 

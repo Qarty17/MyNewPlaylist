@@ -5,7 +5,8 @@ import android.app.Application
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import com.example.mynewplaylist.data.ThemeManager
+import com.example.mynewplaylist.Creator
+import com.example.mynewplaylist.domain.impl.ThemeInteractorImpl
 
 
 const val EXAMPLE_PREFERENCES="new_pref"
@@ -15,7 +16,7 @@ class App: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        val manager=ThemeManager(this)
+        val manager= Creator.provideThemeInteractor(this)
         darkTheme=manager.getSavedTheme()
         if (darkTheme){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -25,7 +26,7 @@ class App: Application() {
 
     }
     fun switchTheme(darkThemeEnabled: Boolean){
-        val manager=ThemeManager(this)
+        val manager=Creator.provideThemeInteractor(this)
         darkTheme=darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if(darkThemeEnabled){

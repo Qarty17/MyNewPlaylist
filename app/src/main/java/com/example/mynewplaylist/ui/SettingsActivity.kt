@@ -5,15 +5,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mynewplaylist.Creator
 import com.example.mynewplaylist.R
-import com.example.mynewplaylist.data.SwitchManager
+import com.example.mynewplaylist.data.SwitchRepositoryImpl
+import com.example.mynewplaylist.domain.api.SwitchInteractor
+import com.example.mynewplaylist.domain.impl.SwitchInteractorImpl
 import com.example.mynewplaylist.presentation.App
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val manager=SwitchManager(this)
+        val manager= Creator.provideSwitchInteractor(this)
         setContentView(R.layout.activity_settings)
         val backButton = findViewById<Button>(R.id.back)
         backButton.setOnClickListener {

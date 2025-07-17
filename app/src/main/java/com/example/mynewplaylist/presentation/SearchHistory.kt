@@ -1,11 +1,11 @@
 package com.example.mynewplaylist.presentation
 
 import android.content.Context
-import com.example.mynewplaylist.data.PlaylistManager
+import com.example.mynewplaylist.Creator
 import com.example.mynewplaylist.domain.models.Track
 
 class SearchHistory(context: Context){
-    val manager=PlaylistManager(context)
+    val manager=Creator.provideHistoryInteractor(context)
     private val maxHistorySize = 10
     fun onTrackClick(track: Track) {
         val history = manager.getHistory()
@@ -16,6 +16,7 @@ class SearchHistory(context: Context){
         }
         manager.saveHistory(history)
     }
+
 }
 
 

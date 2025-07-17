@@ -7,13 +7,14 @@ import com.example.mynewplaylist.ui.new_key
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import androidx.core.content.edit
+import com.example.mynewplaylist.domain.api.HistoryRepository
 
-class PlaylistManager(context: Context) {
+class HistoryRepositoryImpl(context: Context):HistoryRepository {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("search_history", Context.MODE_PRIVATE)
     private val gson = Gson()
 
-    fun getHistory(): ArrayList<Track> {
+    override fun getHistory(): ArrayList<Track> {
         val json = sharedPreferences.getString(new_key, null)
         return if (json != null) {
             val type = object : TypeToken<ArrayList<Track>>() {}.type
@@ -22,11 +23,11 @@ class PlaylistManager(context: Context) {
             ArrayList()
         }
     }
-    fun saveHistory(history: ArrayList<Track>) {
+    override fun saveHistory(history: ArrayList<Track>) {
         val json = gson.toJson(history)
         sharedPreferences.edit { putString(new_key, json) }
     }
-    fun clearHistory() {
+    override fun clearHistory() {
         sharedPreferences.edit { remove(new_key) }
     }
 

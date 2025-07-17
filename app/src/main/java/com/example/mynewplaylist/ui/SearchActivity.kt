@@ -212,55 +212,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             View.VISIBLE
         }
     }
-
-    
-
-//    private fun search() {
-//
-//        playlistService.search(inputEditText.text.toString())
-//            .enqueue(object : Callback<PlaylistResponse> {
-//                override fun onResponse(
-//                    call: Call<PlaylistResponse?>,
-//                    response: Response<PlaylistResponse?>
-//                ) {
-//                    if(inputEditText.text.isNotEmpty()){
-//                        if (response.code() == 200) {
-//                            tracks.clear()
-//
-//                            if (response.body()?.results?.isNotEmpty() == true) {
-//                                progressBar.visibility=View.GONE
-//                                tracks.addAll(response.body()?.results!!)
-//                                recycleView.visibility = View.VISIBLE
-//                            } else {
-//                                progressBar.visibility=View.GONE
-//                                recycleView.visibility = View.GONE
-//                                history.visibility = View.GONE
-//                                notFound.visibility = View.VISIBLE
-//
-//
-//                            }
-//                            adapter.notifyDataSetChanged()
-//                        }
-//                    }
-//
-//                }
-//
-//                override fun onFailure(
-//                    call: Call<PlaylistResponse?>,
-//                    t: Throwable
-//                ) {
-//
-//                    tracks.clear()
-//                    adapter.notifyDataSetChanged()
-//                    recycleView.visibility = View.GONE
-//                    history.visibility = View.GONE
-//                    notInternet.visibility = View.VISIBLE
-//                }
-//
-//            })
-//   }
-
-
 private fun searchCreate(){
         provider.searchTracks(inputEditText.text.toString(), object :TrackIntercator.TrackConsumer{
             override fun consume(foundTracks: List<Track>) {
@@ -284,11 +235,6 @@ private fun searchCreate(){
 
             }
         })
-
-
-
-
-
 }
 private fun method1(): ArrayList<Track>{
         searchHistory= SearchHistory(this)

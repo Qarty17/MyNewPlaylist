@@ -1,6 +1,7 @@
 package com.example.mynewplaylist.ui
 
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -103,8 +104,15 @@ class AudioplayerActivity : AppCompatActivity() {
         private const val STATE_PAUSED=3
     }
     private var playerState= STATE_DEFAULT
+
     private fun preparePlayer(url:String){
-        mediaPlayer.preparePlayer(play,url)
+        mediaPlayer.preparePlayer(play,url, onPrepared = {
+            play.isEnabled=true
+            playerState= STATE_PREPARED
+        }){
+            play.setImageDrawable(getDrawable(R.drawable.pause))
+            playerState= STATE_PREPARED
+        }
     }
     private fun startPlayer(){
         mediaPlayer.startPlayer()

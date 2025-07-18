@@ -9,7 +9,7 @@ class MediaPlayerInteractorImpl(private val mediaPlayerRepository: MediaPlayerRe
     }
 
     override fun pausePlayer() {
-        mediaPlayerRepository.startPlayer()
+        mediaPlayerRepository.pausePlayer()
     }
 
     override fun releasePlayer() {
@@ -20,7 +20,9 @@ class MediaPlayerInteractorImpl(private val mediaPlayerRepository: MediaPlayerRe
         return mediaPlayerRepository.getCurrentPosition()
     }
 
-    override fun preparePlayer(playImage: Any, url: String) {
-        mediaPlayerRepository.preparePlayer(playImage,url)
+    override fun preparePlayer(playImage: Any, url: String,onPrepared:()->Unit,onCompletion:()->Unit) {
+        mediaPlayerRepository.preparePlayer(playImage,url,onPrepared,onCompletion)
     }
+
+
 }

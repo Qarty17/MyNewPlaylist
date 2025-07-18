@@ -2,8 +2,9 @@ package com.example.mynewplaylist.data
 
 
 import android.media.MediaPlayer
-import android.widget.ImageButton
+
 import com.example.mynewplaylist.domain.api.MediaPlayerRepository
+
 
 
 class MediaPlayerRepositoryImpl:MediaPlayerRepository {
@@ -29,17 +30,17 @@ class MediaPlayerRepositoryImpl:MediaPlayerRepository {
         return mediaPlayer.currentPosition
     }
 
-    override fun preparePlayer(playImage:Any,url: String) {
+    override fun preparePlayer(playImage:Any,url: String,onPrepared:()->Unit,onCompletion:()->Unit) {
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener{
-            if (playImage is ImageButton){
-                playImage.isEnabled=true
+            onPrepared()
 
-            }
         }
         mediaPlayer.setOnCompletionListener {
-
+            onCompletion()
         }
     }
+
+
 }

@@ -6,5 +6,5 @@ interface MediaPlayerRepository {
     fun pausePlayer()
     fun releasePlayer()
     fun getCurrentPosition():Int
-    fun preparePlayer(playImage:Any,url: String)
+    fun preparePlayer(playImage:Any,url: String,onPrepared:()->Unit,onCompletion:()->Unit)
 }

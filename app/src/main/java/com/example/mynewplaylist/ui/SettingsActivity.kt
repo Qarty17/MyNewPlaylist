@@ -7,9 +7,6 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mynewplaylist.Creator
 import com.example.mynewplaylist.R
-import com.example.mynewplaylist.data.SwitchRepositoryImpl
-import com.example.mynewplaylist.domain.api.SwitchInteractor
-import com.example.mynewplaylist.domain.impl.SwitchInteractorImpl
 import com.example.mynewplaylist.presentation.App
 import com.google.android.material.switchmaterial.SwitchMaterial
 

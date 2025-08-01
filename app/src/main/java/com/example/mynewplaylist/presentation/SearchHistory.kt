@@ -1,8 +1,8 @@
 package com.example.mynewplaylist.presentation
 
 import android.content.Context
-import com.example.mynewplaylist.Creator
-import com.example.mynewplaylist.domain.models.Track
+import com.example.mynewplaylist.creator.Creator
+import com.example.mynewplaylist.legacy.domain.models.Track
 
 class SearchHistory(context: Context){
     val manager=Creator.provideHistoryInteractor(context)

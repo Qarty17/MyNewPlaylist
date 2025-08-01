@@ -21,14 +21,14 @@
             android:name=".ui.SearchActivity"
             android:exported="false" />
         <activity
-        android:name=".ui.SettingsActivity"
+        android:name=".settings.ui.SettingsActivity"
         android:exported="false" />
         <activity
-            android:name=".ui.AudioplayerActivity"
+            android:name=".player.ui.AudioplayerActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".main.ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

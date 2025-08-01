@@ -11,6 +11,7 @@
     <string name="message_developer">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="thanks">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="link" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="appYandex" translatable="false">https://practicum.yandex.ru/learn/android-developer-plus</string>
     <string name="not_found">Ничего не нашлось</string>
     <string name="not_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
     <string name="update">Обновить</string>

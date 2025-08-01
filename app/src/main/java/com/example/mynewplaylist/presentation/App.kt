@@ -5,8 +5,7 @@ import android.app.Application
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import com.example.mynewplaylist.Creator
-import com.example.mynewplaylist.domain.impl.ThemeInteractorImpl
+import com.example.mynewplaylist.creator.Creator
 
 
 const val EXAMPLE_PREFERENCES="new_pref"

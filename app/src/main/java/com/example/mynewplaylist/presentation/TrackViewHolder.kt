@@ -1,33 +1,35 @@
 package com.example.mynewplaylist.presentation
 
+import android.R.attr.text
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
-import com.example.mynewplaylist.domain.models.Track
+import com.example.mynewplaylist.databinding.TrackViewBinding
+import com.example.mynewplaylist.legacy.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-class TrackViewHolder(parent: ViewGroup): RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(
-    R.layout.new_track_view,parent,false)){
-    private val thisTrackName: TextView=itemView.findViewById<TextView>(R.id.track_name)
-    private val thisArtistName: TextView=itemView.findViewById<TextView>(R.id.artist_name)
-    private val thisTrackTime=itemView.findViewById<TextView>(R.id.track_time)
-    private val thisArtworkUrl=itemView.findViewById<ImageView>(R.id.artwork_url)
-
-
+class TrackViewHolder(private val binding: TrackViewBinding): RecyclerView.ViewHolder(binding.root){
+    companion object{
+        fun from(parent: ViewGroup): TrackViewHolder{
+            val inflater= LayoutInflater.from(parent.context)
+            val binding= TrackViewBinding.inflate(inflater,parent,false)
+            return TrackViewHolder(binding)
+        }
+    }
     fun bind(model: Track, listener: TrackAdapter.Listener){
-        thisTrackName.text=model.trackName
-        thisTrackTime.text=SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
-
-        thisArtistName.text=model.artistName
-        Glide.with(itemView).load(model.artworkUrl100).placeholder(R.drawable.vector3).transform(
-            RoundedCorners(2)).into(thisArtworkUrl)
+        binding.trackName.text=model.trackName
+        binding.trackTime.text=SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
+        binding.artistName.text=model.artistName
+        Glide.with(binding.root).load(model.artworkUrl100).placeholder(R.drawable.vector3).transform(
+            RoundedCorners(2)).into(binding.artworkUrl)
 
 
     }

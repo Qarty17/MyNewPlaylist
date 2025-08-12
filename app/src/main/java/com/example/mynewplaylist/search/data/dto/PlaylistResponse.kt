@@ -1,4 +1,4 @@
-package com.example.mynewplaylist.legacy.data.dto
+package com.example.mynewplaylist.search.data.dto
 
 
 class PlaylistResponse(

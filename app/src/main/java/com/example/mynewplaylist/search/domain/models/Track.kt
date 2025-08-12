@@ -1,6 +1,4 @@
-package com.example.mynewplaylist.legacy.domain.models
-
-
+package com.example.mynewplaylist.search.domain.models
 
 data class Track(
     val trackName: String,

@@ -1,15 +1,11 @@
 package com.example.mynewplaylist.main.ui
 
-import android.R.id.button2
-import android.R.id.button3
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mynewplaylist.R
 import com.example.mynewplaylist.databinding.ActivityMainBinding
 import com.example.mynewplaylist.ui.MediaActivity
-import com.example.mynewplaylist.ui.SearchActivity
+import com.example.mynewplaylist.search.ui.SearchActivity
 import com.example.mynewplaylist.settings.ui.SettingsActivity
 
 class MainActivity : AppCompatActivity() {

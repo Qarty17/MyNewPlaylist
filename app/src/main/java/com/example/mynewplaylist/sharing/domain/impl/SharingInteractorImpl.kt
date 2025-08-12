@@ -1,6 +1,5 @@
 package com.example.mynewplaylist.sharing.domain.impl
 
-import android.content.Intent
 import com.example.mynewplaylist.settings.domain.model.EmailData
 import com.example.mynewplaylist.sharing.domain.ExternalNavigator
 import com.example.mynewplaylist.sharing.domain.SharingInteractor
@@ -12,16 +11,14 @@ class SharingInteractorImpl(private val externalNavigator: ExternalNavigator): S
         const val TERMSLINK="https://yandex.ru/legal/practicum_offer/"
 
     }
-    override fun shareApp():Intent {
-        return externalNavigator.shareLink(getShareAppLink())
+    override fun shareApp() {
+        externalNavigator.shareLink(getShareAppLink())
     }
-
-    override fun openTerms():Intent {
-        return externalNavigator.openLink(getTermsLink())
+    override fun openTerms() {
+        externalNavigator.openLink(getTermsLink())
     }
-
-    override fun openSupport():Intent {
-        return externalNavigator.openEmail(getSupportEmailData())
+    override fun openSupport() {
+        externalNavigator.openEmail(getSupportEmailData())
     }
     private fun getShareAppLink(): String{
         return APPLINK

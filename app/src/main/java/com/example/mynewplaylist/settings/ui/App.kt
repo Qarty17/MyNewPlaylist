@@ -1,4 +1,4 @@
-package com.example.mynewplaylist.presentation
+package com.example.mynewplaylist.settings.ui
 
 
 import android.app.Application
@@ -37,14 +37,5 @@ class App: Application() {
             }
         )
     }
-    private fun getSavedTheme(): Boolean{
-        val sharedPreferences=getSharedPreferences(EXAMPLE_PREFERENCES,MODE_PRIVATE)
-        return sharedPreferences.getBoolean(KEY_PREFERENCES,false)
-    }
-    private fun saveTheme(isDarkTheme: Boolean){
-        val sharedPreferences=getSharedPreferences(EXAMPLE_PREFERENCES,MODE_PRIVATE)
-        sharedPreferences.edit {
-            putBoolean(KEY_PREFERENCES, isDarkTheme)
-        }
-    }
+
 }

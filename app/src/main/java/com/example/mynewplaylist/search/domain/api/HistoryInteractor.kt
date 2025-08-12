@@ -1,6 +1,6 @@
-package com.example.mynewplaylist.legacy.domain.api
+package com.example.mynewplaylist.search.domain.api
 
-import com.example.mynewplaylist.legacy.domain.models.Track
+import com.example.mynewplaylist.search.domain.models.Track
 
 interface HistoryInteractor {
     fun getHistory(): ArrayList<Track>

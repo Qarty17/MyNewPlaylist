@@ -1,9 +1,9 @@
-package com.example.mynewplaylist.presentation
-
+package com.example.mynewplaylist.search.ui
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mynewplaylist.legacy.domain.models.Track
+import com.example.mynewplaylist.search.ui.TrackViewHolder
+import com.example.mynewplaylist.search.domain.models.Track
 
 class TrackAdapter(val listener: Listener, private val onTrackClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
 
@@ -11,7 +11,7 @@ class TrackAdapter(val listener: Listener, private val onTrackClick: (Track) -> 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): TrackViewHolder = TrackViewHolder.from(parent)
+    ): TrackViewHolder = TrackViewHolder.Companion.from(parent)
 
     override fun onBindViewHolder(
         holder: TrackViewHolder,

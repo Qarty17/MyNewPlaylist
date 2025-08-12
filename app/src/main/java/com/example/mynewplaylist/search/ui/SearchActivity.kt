@@ -1,4 +1,4 @@
-package com.example.mynewplaylist.ui
+package com.example.mynewplaylist.search.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,48 +6,42 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.mynewplaylist.creator.Creator
-import com.example.mynewplaylist.R
 import com.example.mynewplaylist.databinding.ActivitySearchBinding
-import com.example.mynewplaylist.databinding.ActivitySettingsBinding
-import com.example.mynewplaylist.legacy.domain.api.TrackIntercator
-import com.example.mynewplaylist.legacy.domain.models.Track
+import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.main.ui.MainActivity
 import com.example.mynewplaylist.player.ui.AudioplayerActivity
-import com.example.mynewplaylist.presentation.SearchHistory
-import com.example.mynewplaylist.presentation.TrackAdapter
+
+
+
 import java.text.SimpleDateFormat
 import java.util.Locale
-
 const val new_key="key_from_list"
 class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
-    private val searchRunnable= Runnable {
-        searchCreate()
-    }
-    private lateinit var binding: ActivitySearchBinding
     private var isClickAllowed = true
-    private val handler:Handler =Handler(Looper.getMainLooper())
+    private var simpleTextWatcher: TextWatcher? = null
+    private var viewModel: PlaylistViewModel?=null
+    private lateinit var binding: ActivitySearchBinding
     private lateinit var historyAdapter: TrackAdapter
     lateinit var searchHistory: SearchHistory
     private val tracks = ArrayList<Track>()
     private lateinit var adapter: TrackAdapter
     private val creator=Creator
-    private val provider=creator.provideTrackInteractor()
     var newValue = VALUE_DEF
+    private val handler:Handler =Handler(Looper.getMainLooper())
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel= ViewModelProvider(this, PlaylistViewModel.getFactory())[PlaylistViewModel::class.java]
+        viewModel?.observeState()?.observe(this){
+            render(it)
+        }
         binding= ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         if (savedInstanceState != null) {
@@ -61,7 +55,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         adapter.tracks = tracks
         binding.recyclerView.adapter = adapter
         historyAdapter= TrackAdapter(this){track->
-            if(clickDebounce()){
+            if(clickDebounce() ){
                 searchHistory.onTrackClick(track)
             }
         }
@@ -69,7 +63,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         binding.recyclerViewHistory.adapter = historyAdapter
         historyAdapter.tracks = searchHistory.manager.getHistory()
         if (searchHistory.manager.getHistory().isNotEmpty()){
-            binding.history.visibility= View.VISIBLE
+            showHistory()
         }else{
             binding.history.visibility= View.GONE
         }
@@ -85,7 +79,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             false
         }
 
-        val simpleTextWatcher = object : TextWatcher {
+        simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
@@ -93,28 +87,33 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if(p0?.isNotEmpty() == true){
                     binding.apply {
-                        progressBar.visibility=View.VISIBLE
-                        notFound.visibility=View.GONE
-                        notInternet.visibility=View.GONE
+                        showLoading()
                     }
-                    searchDebounce()
-                }else{
-                    binding.progressBar.visibility=View.GONE
-                }
-                    binding.history.visibility = if (binding.inputEdittext.hasFocus() && p0?.isEmpty() == true && searchHistory.manager.getHistory().isNotEmpty()) {
-
-                    binding.progressBar.visibility=View.GONE
-                    binding.recyclerView.visibility = View.GONE
-                    historyAdapter.tracks=searchHistory.manager.getHistory()
+                    viewModel?.searchDebounce(changedText = p0.toString())
                     historyAdapter.notifyDataSetChanged()
                     adapter.notifyDataSetChanged()
-                    View.VISIBLE
-                } else {
 
-                    binding.recyclerView.visibility = View.GONE
-                    View.GONE
+
+                }else{
+                    viewModel?.clearHandler()
+                    binding.history.visibility = if (binding.inputEdittext.hasFocus() && p0?.isEmpty() == true && searchHistory.manager.getHistory().isNotEmpty()) {
+                        binding.progressBar.visibility=View.GONE
+                        binding.recyclerView.visibility = View.GONE
+                        historyAdapter.tracks=searchHistory.manager.getHistory()
+                        historyAdapter.notifyDataSetChanged()
+                        adapter.notifyDataSetChanged()
+
+                        View.VISIBLE
+                    } else {
+                        binding.recyclerView.visibility = View.GONE
+                        View.GONE
+                    }
+
                 }
 
+
+                historyAdapter.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
                 newValue = p0.toString()
                 binding.clearIcon.visibility = clearButtonVisibly(p0)
             }
@@ -122,12 +121,14 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             override fun afterTextChanged(p0: Editable?) {
             }
         }
-        binding.inputEdittext.addTextChangedListener(simpleTextWatcher)
+        simpleTextWatcher.let { binding.inputEdittext.addTextChangedListener(it) }
         binding.inputEdittext.setOnFocusChangeListener { view, hasFocus ->
             if(binding.inputEdittext.text.isEmpty()){
+                showHistory()
             }
             binding.history.visibility =
-                if (hasFocus && binding.inputEdittext.text.isEmpty() && searchHistory.manager.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+            if (hasFocus && binding.inputEdittext.text.isEmpty() && searchHistory.manager.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+
 
         }
 
@@ -155,8 +156,9 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
         }
         binding.updateButton.setOnClickListener {
-            searchDebounce()
-            creator.provideTrackInteractor()
+            showLoading()
+            viewModel?.searchDebounce(binding.inputEdittext.text.toString())
+            creator.provideTrackInteractor(this)
         }
         binding.historyButton.setOnClickListener {
             searchHistory.manager.clearHistory()
@@ -166,21 +168,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
         }
     }
-
-    private fun clickDebounce():Boolean{
-        val current=isClickAllowed
-        if(isClickAllowed){
-            isClickAllowed=false
-            handler.postDelayed({isClickAllowed=true},1000L)
-        }
-        return current
-    }
-    private fun searchDebounce(){
-        handler.removeCallbacks(searchRunnable)
-        handler.postDelayed(searchRunnable,2000L)
-
-
-    }
     private fun clearButtonVisibly(s: CharSequence?): Int {
 
         return if (s.isNullOrEmpty()) {
@@ -189,32 +176,17 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             View.VISIBLE
         }
     }
-private fun searchCreate(){
-        provider.searchTracks(binding.inputEdittext.text.toString(), object :TrackIntercator.TrackConsumer{
-            override fun consume(foundTracks: List<Track>) {
-                runOnUiThread{
-                    if (foundTracks.isNotEmpty()) {
-                        binding.progressBar.visibility=View.GONE
-                        tracks.addAll(foundTracks)
-                        Log.d("tracks",tracks.toString())
-                        binding.recyclerView.visibility = View.VISIBLE
-                    } else {
-                        binding.apply {
-                            progressBar.visibility=View.GONE
-                            recyclerView.visibility = View.GONE
-                            history.visibility = View.GONE
-                            notFound.visibility = View.VISIBLE
-                        }
-                    }
-                    adapter.notifyDataSetChanged()
-                }
-
-            }
-        })
-}
-private fun method1(): ArrayList<Track>{
+    private fun method1(): ArrayList<Track>{
         searchHistory= SearchHistory(this)
         return searchHistory.manager.getHistory()
+    }
+    private fun clickDebounce():Boolean{
+        val current=isClickAllowed
+        if(isClickAllowed){
+            isClickAllowed=false
+            handler.postDelayed({isClickAllowed=true},1000L)
+        }
+        return current
     }
 
     override fun onClick(track: Track) {
@@ -246,10 +218,70 @@ private fun method1(): ArrayList<Track>{
     override fun addName(track: Track): String{
         return track.trackName
     }
+    fun showHistory(){
+        binding.apply {
+            notInternet.visibility= View.GONE
+            recyclerView.visibility= View.GONE
+            progressBar.visibility=View.GONE
+            history.visibility=View.VISIBLE
+            notFound.visibility=View.GONE
+
+        }
+        historyAdapter.notifyDataSetChanged()
+    }
+    fun showLoading(){
+        binding.apply {
+            notInternet.visibility= View.GONE
+            recyclerView.visibility= View.GONE
+            progressBar.visibility=View.VISIBLE
+            history.visibility=View.GONE
+            notFound.visibility=View.GONE
+        }
+    }
+    fun showContent(tracksList: ArrayList<Track>){
+        binding.apply {
+            recyclerView.visibility=View.VISIBLE
+            notFound.visibility=View.GONE
+            notInternet.visibility=View.GONE
+            progressBar.visibility=View.GONE
+            history.visibility=View.GONE
+        }
+        adapter.tracks.clear()
+        adapter.tracks.addAll(tracksList)
+        adapter.notifyDataSetChanged()
+
+    }
+    fun showError(){
+        binding.apply {
+            recyclerView.visibility=View.GONE
+            notFound.visibility=View.GONE
+            notInternet.visibility=View.VISIBLE
+            progressBar.visibility=View.GONE
+            history.visibility=View.GONE
+        }
+
+    }
+    fun showEmpty(){
+        binding.apply {
+            recyclerView.visibility=View.GONE
+            notFound.visibility=View.VISIBLE
+            notInternet.visibility=View.GONE
+            progressBar.visibility=View.GONE
+            history.visibility=View.GONE
+        }
+    }
+    fun render(state: PlaylistState){
+        when(state){
+            is PlaylistState.Loading->showLoading()
+            is PlaylistState.Content->showContent(state.tracks)
+            is PlaylistState.Error->showError()
+            is PlaylistState.Empty->showEmpty()
+        }
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        handler.removeCallbacks(searchRunnable)
+        simpleTextWatcher.let { binding.inputEdittext.removeTextChangedListener(it) }
     }
 }
 

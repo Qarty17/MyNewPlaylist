@@ -1,14 +1,10 @@
 package com.example.mynewplaylist.player.ui
 
-import android.R.attr.text
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
@@ -19,10 +15,7 @@ import java.util.Locale
 
 class AudioplayerActivity : AppCompatActivity() {
     private lateinit var binding: AudioPlayerBinding
-    private var handler: Handler?=null
-    private var mediaPlayer= Creator.provideMediaPlayerInteractor()
-    private lateinit var newThread:Thread
-    private var stop=false
+    private lateinit var viewModel: PlayerViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= AudioPlayerBinding.inflate(layoutInflater)
@@ -43,78 +36,34 @@ class AudioplayerActivity : AppCompatActivity() {
             RoundedCorners(8)
         ).into(binding.cover)
         val url=intent.extras?.getString("previewUrl").toString()
-        preparePlayer(url)
-        handler= Handler(Looper.getMainLooper())
-        binding.timer.text= SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
-        binding.view2.setOnClickListener{
-            newThread=Thread{
-                handler?.postDelayed(object :Runnable{
-                    override fun run() {
-                        if(!stop) {
-                            binding.timer.text = SimpleDateFormat(
-                                "m:ss",
-                                Locale.getDefault()
-                            ).format(mediaPlayer.getCurrentPosition())
-                            handler?.postDelayed(this, 300L)
-                        }
-                    }
-                },300L
-                )
-            }
-            newThread.start()
 
-            playbackControl()
+        viewModel= ViewModelProvider(this,PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
+        viewModel.observePlayerState().observe(this) {
+            changeButton(it == PlayerViewModel.STATE_PLAYING)
+            enableButton(it!= PlayerViewModel.STATE_DEFAULT)
+        }
+        viewModel.observeProgressTime().observe(this) {
+            binding.timer.text=it
+        }
+        binding.view2.setOnClickListener{
+            viewModel.onPlayButtonClicked()
         }
     }
     private fun getCoverArtwork(url: String?): String{
         return url?.replaceAfterLast('/',"512x512bb.jpg").toString()
     }
-    companion object{
-        private const val STATE_DEFAULT=0
-        private const val STATE_PREPARED=1
-        private const val STATE_PLAYING=2
-        private const val STATE_PAUSED=3
+    private fun enableButton(isEnabled: Boolean){
+        binding.view2.isEnabled=isEnabled
     }
-    private var playerState= STATE_DEFAULT
-
-    private fun preparePlayer(url:String){
-        mediaPlayer.preparePlayer(binding.view2,url, onPrepared = {
-            binding.view2.isEnabled=true
-            playerState= STATE_PREPARED
-        }){
+    private fun changeButton(isPlaying: Boolean) {
+        if(isPlaying){
+            binding.view2.setImageDrawable(getDrawable(R.drawable.play))
+        }else{
             binding.view2.setImageDrawable(getDrawable(R.drawable.pause))
-            playerState= STATE_PREPARED
-        }
-    }
-    private fun startPlayer(){
-        mediaPlayer.startPlayer()
-        playerState= STATE_PLAYING
-    }
-    private fun pausePlayer(){
-        mediaPlayer.pausePlayer()
-        playerState= STATE_PAUSED
-    }
-    private fun playbackControl(){
-        when(playerState){
-            STATE_PLAYING ->{
-                binding.view2.setImageDrawable(getDrawable(R.drawable.pause))
-                binding.timer.text= SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
-                pausePlayer()
-            }
-            STATE_PAUSED,STATE_PREPARED, STATE_DEFAULT ->{
-                binding.view2.setImageDrawable(getDrawable(R.drawable.play))
-                binding.timer.text= SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.getCurrentPosition())
-                startPlayer()
-            }
         }
     }
     override fun onPause() {
         super.onPause()
-        pausePlayer()
-    }
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayer.releasePlayer()
-        stop=true
+        viewModel.onPause()
     }
 }

@@ -1,5 +1,4 @@
-package com.example.mynewplaylist.player.ui
-
+package com.example.mynewplaylist.player.presentation
 
 import android.media.MediaPlayer
 import android.os.Handler
@@ -13,7 +12,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.Runnable
 import java.text.SimpleDateFormat
 import java.util.Locale
-
 
 class PlayerViewModel(private val url: String): ViewModel() {
     companion object{
@@ -29,14 +27,14 @@ class PlayerViewModel(private val url: String): ViewModel() {
     }
     private var newValue="0:00"
     private val mediaPlayer= MediaPlayer()
-    private val handler: Handler= Handler(Looper.getMainLooper())
+    private val handler: Handler = Handler(Looper.getMainLooper())
     private val playerStateLiveData= MutableLiveData(STATE_DEFAULT)
     fun observePlayerState(): LiveData<Int> = playerStateLiveData
     private val progressTimeLiveData= MutableLiveData("0:00")
     fun observeProgressTime(): LiveData<String> =progressTimeLiveData
 
-    private val timerRunnable= Runnable{
-        if (playerStateLiveData.value==STATE_PLAYING){
+    private val timerRunnable= Runnable {
+        if (playerStateLiveData.value == STATE_PLAYING) {
             startTimerUpdate()
         }
 
@@ -50,7 +48,7 @@ class PlayerViewModel(private val url: String): ViewModel() {
 
     private fun startTimerUpdate(){
 
-        progressTimeLiveData.value=SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+        progressTimeLiveData.value= SimpleDateFormat("m:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
         handler.postDelayed(timerRunnable,200)
 
     }
@@ -81,6 +79,7 @@ class PlayerViewModel(private val url: String): ViewModel() {
     }
     private fun startPlayer(){
         mediaPlayer.start()
+
         playerStateLiveData.value=STATE_PLAYING
         startTimerUpdate()
     }
@@ -94,6 +93,7 @@ class PlayerViewModel(private val url: String): ViewModel() {
         handler.removeCallbacks(timerRunnable)
     }
     private fun resetTimer(){
+
         handler.removeCallbacks (timerRunnable)
         progressTimeLiveData.value="0:00"
     }

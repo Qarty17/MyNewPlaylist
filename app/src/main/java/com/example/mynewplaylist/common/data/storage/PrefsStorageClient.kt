@@ -9,7 +9,7 @@ import androidx.core.content.edit
 
 
 class PrefsStorageClient<T>(
-    private val context: Context,
+    context: Context,
     private val dataKey:String,
     private val type: Type): StorageClient<T>
 {
@@ -26,5 +26,9 @@ class PrefsStorageClient<T>(
         }else{
             gson.fromJson(dataJson,type)
         }
+    }
+
+    override fun removeData() {
+        prefs.edit { remove(dataKey) }
     }
 }

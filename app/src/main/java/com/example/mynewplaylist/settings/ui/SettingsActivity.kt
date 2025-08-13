@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.mynewplaylist.creator.Creator
 import com.example.mynewplaylist.databinding.ActivitySettingsBinding
+import com.example.mynewplaylist.settings.presentation.SettingsViewModel
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding

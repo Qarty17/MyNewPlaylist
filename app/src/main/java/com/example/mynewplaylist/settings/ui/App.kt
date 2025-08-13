@@ -2,17 +2,11 @@ package com.example.mynewplaylist.settings.ui
 
 
 import android.app.Application
-
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.edit
 import com.example.mynewplaylist.creator.Creator
 
-
-const val EXAMPLE_PREFERENCES="new_pref"
-const val KEY_PREFERENCES="new_key_pref"
 class App: Application() {
     private var darkTheme=false
-
     override fun onCreate() {
         super.onCreate()
         val manager= Creator.provideThemeInteractor(this)

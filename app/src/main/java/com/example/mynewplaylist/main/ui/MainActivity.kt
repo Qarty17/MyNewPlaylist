@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mynewplaylist.databinding.ActivityMainBinding
-import com.example.mynewplaylist.ui.MediaActivity
+import com.example.mynewplaylist.media.ui.MediaActivity
 import com.example.mynewplaylist.search.ui.SearchActivity
 import com.example.mynewplaylist.settings.ui.SettingsActivity
 

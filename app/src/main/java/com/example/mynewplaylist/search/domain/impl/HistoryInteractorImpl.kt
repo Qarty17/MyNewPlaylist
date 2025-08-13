@@ -6,12 +6,12 @@ import com.example.mynewplaylist.search.domain.models.Track
 
 class HistoryInteractorImpl(private val historyRepository: HistoryRepository): HistoryInteractor {
 
-    override fun getHistory(): ArrayList<Track> {
+    override fun getHistory(): ArrayList<Track>{
         return historyRepository.getHistory()
     }
 
-    override fun saveHistory(history: ArrayList<Track>) {
-        historyRepository.saveHistory(history)
+    override fun saveHistory(t: ArrayList<Track>) {
+         historyRepository.saveHistory(t)
     }
 
     override fun clearHistory() {

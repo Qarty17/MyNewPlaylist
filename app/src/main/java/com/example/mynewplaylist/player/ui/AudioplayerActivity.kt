@@ -1,17 +1,15 @@
 package com.example.mynewplaylist.player.ui
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
-import com.example.mynewplaylist.creator.Creator
 import com.example.mynewplaylist.databinding.AudioPlayerBinding
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.mynewplaylist.player.presentation.PlayerViewModel
+
 
 class AudioplayerActivity : AppCompatActivity() {
     private lateinit var binding: AudioPlayerBinding
@@ -37,7 +35,7 @@ class AudioplayerActivity : AppCompatActivity() {
         ).into(binding.cover)
         val url=intent.extras?.getString("previewUrl").toString()
 
-        viewModel= ViewModelProvider(this,PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
+        viewModel= ViewModelProvider(this, PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
         viewModel.observePlayerState().observe(this) {
             changeButton(it == PlayerViewModel.STATE_PLAYING)
             enableButton(it!= PlayerViewModel.STATE_DEFAULT)

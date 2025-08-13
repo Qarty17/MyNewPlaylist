@@ -1,12 +1,13 @@
-package com.example.mynewplaylist.legacy.data
+package com.example.mynewplaylist.settings.data.impl
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
-import com.example.mynewplaylist.legacy.domain.api.SwitchRepository
+import com.example.mynewplaylist.settings.domain.api.SwitchRepository
 
-class SwitchRepositoryImpl(context: Context):SwitchRepository {
-    private val sharedPreferences: SharedPreferences =context.getSharedPreferences("switch1", MODE_PRIVATE)
+class SwitchRepositoryImpl(context: Context): SwitchRepository {
+    private val sharedPreferences: SharedPreferences =context.getSharedPreferences("switch1",
+        Context.MODE_PRIVATE
+    )
     private val editor=sharedPreferences.edit()
     override fun getSavedSwitcher():Boolean{
         return sharedPreferences.getBoolean("switch1",false)

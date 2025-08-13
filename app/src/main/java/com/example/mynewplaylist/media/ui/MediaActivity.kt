@@ -1,4 +1,4 @@
-package com.example.mynewplaylist.ui
+package com.example.mynewplaylist.media.ui
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

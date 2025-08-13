@@ -1,10 +1,10 @@
-package com.example.mynewplaylist.legacy.data
+package com.example.mynewplaylist.settings.data.impl
 
 import android.content.Context
 
 import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import androidx.core.content.edit
-import com.example.mynewplaylist.legacy.domain.api.ThemeRepository
+import com.example.mynewplaylist.settings.domain.api.ThemeRepository
 
 const val EXAMPLE_PREFERENCES="new_pref"
 const val KEY_PREFERENCES="new_key_pref"

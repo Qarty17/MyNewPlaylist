@@ -1,4 +1,4 @@
-package com.example.mynewplaylist.search.ui
+package com.example.mynewplaylist.search.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

@@ -1,4 +1,4 @@
-package com.example.mynewplaylist.legacy.domain.api
+package com.example.mynewplaylist.settings.domain.api
 
 interface ThemeInteractor {
     fun getSavedTheme(): Boolean

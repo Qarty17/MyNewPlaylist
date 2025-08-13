@@ -18,19 +18,18 @@ import com.example.mynewplaylist.databinding.ActivitySearchBinding
 import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.main.ui.MainActivity
 import com.example.mynewplaylist.player.ui.AudioplayerActivity
-
-
+import com.example.mynewplaylist.search.presentation.PlaylistViewModel
+import com.example.mynewplaylist.search.presentation.TrackAdapter
 
 import java.text.SimpleDateFormat
 import java.util.Locale
-const val new_key="key_from_list"
+
 class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
     private var isClickAllowed = true
     private var simpleTextWatcher: TextWatcher? = null
     private var viewModel: PlaylistViewModel?=null
     private lateinit var binding: ActivitySearchBinding
     private lateinit var historyAdapter: TrackAdapter
-    lateinit var searchHistory: SearchHistory
     private val tracks = ArrayList<Track>()
     private lateinit var adapter: TrackAdapter
     private val creator=Creator
@@ -47,22 +46,22 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         if (savedInstanceState != null) {
             newValue = savedInstanceState.getString(VALUE, VALUE_DEF)
         }
-        searchHistory= SearchHistory(this)
-        adapter= TrackAdapter(this){track->
-            searchHistory.onTrackClick(track)
+
+        adapter= TrackAdapter(this) { track ->
+            viewModel?.onTrackClick(track)
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         adapter.tracks = tracks
         binding.recyclerView.adapter = adapter
-        historyAdapter= TrackAdapter(this){track->
-            if(clickDebounce() ){
-                searchHistory.onTrackClick(track)
+        historyAdapter= TrackAdapter(this) { track ->
+            if (clickDebounce()) {
+                viewModel?.onTrackClick(track)
             }
         }
         binding.recyclerViewHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewHistory.adapter = historyAdapter
-        historyAdapter.tracks = searchHistory.manager.getHistory()
-        if (searchHistory.manager.getHistory().isNotEmpty()){
+        historyAdapter.tracks = viewModel?.historyProvider?.getHistory()!!
+        if (viewModel?.getHistory()!!.isNotEmpty()){
             showHistory()
         }else{
             binding.history.visibility= View.GONE
@@ -96,10 +95,10 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
                 }else{
                     viewModel?.clearHandler()
-                    binding.history.visibility = if (binding.inputEdittext.hasFocus() && p0?.isEmpty() == true && searchHistory.manager.getHistory().isNotEmpty()) {
+                    binding.history.visibility = if (binding.inputEdittext.hasFocus() && p0?.isEmpty() == true && viewModel?.getHistory()!!.isNotEmpty()) {
                         binding.progressBar.visibility=View.GONE
                         binding.recyclerView.visibility = View.GONE
-                        historyAdapter.tracks=searchHistory.manager.getHistory()
+                        historyAdapter.tracks=viewModel?.getHistory()!!
                         historyAdapter.notifyDataSetChanged()
                         adapter.notifyDataSetChanged()
 
@@ -127,7 +126,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
                 showHistory()
             }
             binding.history.visibility =
-            if (hasFocus && binding.inputEdittext.text.isEmpty() && searchHistory.manager.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
+            if (hasFocus && binding.inputEdittext.text.isEmpty() && viewModel?.getHistory()!!.isNotEmpty()) View.VISIBLE else View.GONE
 
 
         }
@@ -142,13 +141,13 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             binding.inputEdittext.setText("")
             tracks.clear()
             adapter.notifyDataSetChanged()
-            if (searchHistory.manager.getHistory().isNotEmpty()){
+            if (viewModel?.getHistory()!!.isNotEmpty()){
                 binding.history.visibility= View.VISIBLE
             }else{
                 binding.history.visibility= View.GONE
             }
             binding.progressBar.visibility=View.GONE
-            historyAdapter.tracks=searchHistory.manager.getHistory()
+            historyAdapter.tracks=viewModel?.getHistory()!!
             historyAdapter.notifyDataSetChanged()
 
             binding.notFound.visibility = View.GONE
@@ -161,7 +160,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             creator.provideTrackInteractor(this)
         }
         binding.historyButton.setOnClickListener {
-            searchHistory.manager.clearHistory()
+            viewModel?.clearHistory()
             historyAdapter.tracks.clear()
             historyAdapter.notifyDataSetChanged()
             binding.history.visibility=View.GONE
@@ -177,8 +176,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
     }
     private fun method1(): ArrayList<Track>{
-        searchHistory= SearchHistory(this)
-        return searchHistory.manager.getHistory()
+
+        return viewModel?.getHistory()!!
     }
     private fun clickDebounce():Boolean{
         val current=isClickAllowed

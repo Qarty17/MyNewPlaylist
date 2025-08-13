@@ -8,4 +8,19 @@
     <string name="support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
     <string name="back">Назад</string>
+    <string name="message_developer">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="thanks">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="link" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="appYandex" translatable="false">https://practicum.yandex.ru/learn/android-developer-plus</string>
+    <string name="not_found">Ничего не нашлось</string>
+    <string name="not_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="update">Обновить</string>
+    <string name="history">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="_0_29">0:30</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="Country">Страна</string>
 </resources>

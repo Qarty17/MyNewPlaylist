@@ -36,12 +36,10 @@ class AudioplayerActivity : AppCompatActivity() {
         val url=intent.extras?.getString("previewUrl").toString()
 
         viewModel= ViewModelProvider(this, PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
-        viewModel.observePlayerState().observe(this) {
-            changeButton(it == PlayerViewModel.STATE_PLAYING)
-            enableButton(it!= PlayerViewModel.STATE_DEFAULT)
-        }
-        viewModel.observeProgressTime().observe(this) {
-            binding.timer.text=it
+        viewModel.observePlayerProgressLiveData().observe(this) {
+            changeButton(it.player== PlayerViewModel.STATE_PLAYING)
+            enableButton(it.player!= PlayerViewModel.STATE_DEFAULT)
+            binding.timer.text=it.progress
         }
         binding.view2.setOnClickListener{
             viewModel.onPlayButtonClicked()

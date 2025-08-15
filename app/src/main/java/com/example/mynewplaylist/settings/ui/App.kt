@@ -9,6 +9,7 @@ class App: Application() {
     private var darkTheme=false
     override fun onCreate() {
         super.onCreate()
+        Creator.initApplication(this)
         val manager= Creator.provideThemeInteractor(this)
         darkTheme=manager.getSavedTheme()
         if (darkTheme){

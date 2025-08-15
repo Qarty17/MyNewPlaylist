@@ -7,4 +7,5 @@ sealed interface PlaylistState {
     data class Content(val tracks: ArrayList<Track>): PlaylistState
     data class Error(val errorMessage: String): PlaylistState
     data class Empty(val message:String): PlaylistState
+
 }

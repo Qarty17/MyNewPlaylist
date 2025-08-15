@@ -1,30 +1,26 @@
 package com.example.mynewplaylist.search.presentation
 
-import android.content.Context
+
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mynewplaylist.creator.Creator
 import com.example.mynewplaylist.search.domain.api.TrackIntercator
 import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.search.ui.PlaylistState
-import com.example.mynewplaylist.settings.ui.App
 import kotlinx.coroutines.Runnable
 
-class PlaylistViewModel(context: Context): ViewModel() {
-
+class PlaylistViewModel(): ViewModel() {
+    val historyProvider= Creator.provideHistoryInteractor()
     private var latestSearchText: String? = null
-    private val stateLiveData= MutableLiveData<PlaylistState>()
-    fun observeState(): LiveData<PlaylistState> = stateLiveData
-    private val provider= Creator.provideTrackInteractor(context)
-    val historyProvider= Creator.provideHistoryInteractor(context)
 
+    private val searchLiveData= MutableLiveData(SearchState(historyProvider.getHistory(),PlaylistState.Content(arrayListOf())))
+    fun observeSearch(): LiveData<SearchState> = searchLiveData
+    private val provider= Creator.provideTrackInteractor()
+    private var isClickAllowed = true
     private val handler: Handler = Handler(Looper.getMainLooper())
 
     fun searchCreate(newSearchText:String){
@@ -71,14 +67,19 @@ class PlaylistViewModel(context: Context): ViewModel() {
         historyProvider.clearHistory()
     }
     fun onTrackClick(track: Track) {
-        val history=historyProvider.getHistory()
-        history.add(0, track)
-        history.size.let {
-            if (it > 10) {
-                history.subList(10, history.size).clear()
+        searchLiveData.value?.history=getHistory()
+        searchLiveData.value?.history?.removeAll { it.trackId == track.trackId }
+        searchLiveData.value?.history?.add(0, track)
+
+
+        searchLiveData.value?.history?.size.let {
+            if (it != null) {
+                if (it > 10) {
+                    searchLiveData.value?.history?.subList(10, searchLiveData.value?.history?.size!!)!!.clear()
+                }
             }
         }
-        historyProvider.saveHistory(history)
+        historyProvider.saveHistory(searchLiveData.value?.history!!)
     }
     fun searchDebounce(changedText: String){
         if(latestSearchText==changedText)
@@ -95,8 +96,17 @@ class PlaylistViewModel(context: Context): ViewModel() {
     }
 
     private fun renderState(state: PlaylistState) {
-        stateLiveData.postValue(state)
+        searchLiveData.postValue(SearchState(searchLiveData.value?.history ?: arrayListOf(),state))
+        //stateLiveData.postValue(state)
 
+    }
+    fun clickDebounce():Boolean{
+        val current=isClickAllowed
+        if(isClickAllowed){
+            isClickAllowed=false
+            handler.postDelayed({isClickAllowed=true},1000L)
+        }
+        return current
     }
 
     override fun onCleared() {
@@ -110,12 +120,5 @@ class PlaylistViewModel(context: Context): ViewModel() {
 
     companion object{
         val SEARCH_REQUEST_TOKEN = Any()
-        fun getFactory(): ViewModelProvider.Factory= viewModelFactory {
-            initializer {
-                val app =
-                    (this[ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY] as App)
-                PlaylistViewModel(app)
-            }
-        }
     }
 }

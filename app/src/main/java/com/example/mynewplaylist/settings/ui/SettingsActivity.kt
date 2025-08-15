@@ -24,7 +24,9 @@ class SettingsActivity : AppCompatActivity() {
         binding.back.setOnClickListener {
             finish()
         }
-        binding.switch1.isChecked=viewModel.getSwitch()
+        viewModel.observeSwitch().observe(this){
+            binding.switch1.isChecked=it
+        }
         binding.switch1.setOnCheckedChangeListener { switcher,checked->
             viewModel.saveSwitch(checked)
             (applicationContext as App).switchTheme(checked)

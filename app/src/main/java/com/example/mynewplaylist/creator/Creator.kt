@@ -1,5 +1,6 @@
 package com.example.mynewplaylist.creator
 
+import android.app.Application
 import android.content.Context
 import com.example.mynewplaylist.common.data.storage.PrefsStorageClient
 import com.example.mynewplaylist.search.data.HistoryRepositoryImpl
@@ -27,20 +28,24 @@ import com.example.mynewplaylist.sharing.domain.impl.SharingInteractorImpl
 import com.google.gson.reflect.TypeToken
 
 object Creator {
-    private fun getTracksRepository(context: Context): TracksRepository {
-        return TracksRepositoryImpl(RetrofitNetworkClient(context))
+    private lateinit var application: Application
+    fun initApplication(application: Application){
+        this.application=application
     }
-    fun provideTrackInteractor(context: Context): TrackIntercator {
-        return TrackInteractorImpl(getTracksRepository(context))
+    private fun getTracksRepository(): TracksRepository {
+        return TracksRepositoryImpl(RetrofitNetworkClient(application))
     }
-    private fun getHistoryRepository(context: Context): HistoryRepository {
+    fun provideTrackInteractor(): TrackIntercator {
+        return TrackInteractorImpl(getTracksRepository())
+    }
+    private fun getHistoryRepository(): HistoryRepository {
         return HistoryRepositoryImpl(PrefsStorageClient<ArrayList<Track>>(
-            context,
+            application,
             "history",
             object : TypeToken<ArrayList<Track>>(){}.type))
     }
-    fun provideHistoryInteractor(context: Context): HistoryInteractor {
-        return HistoryInteractorImpl(getHistoryRepository(context))
+    fun provideHistoryInteractor(): HistoryInteractor {
+        return HistoryInteractorImpl(getHistoryRepository())
     }
     private fun getSwitchRepository(context: Context): SwitchRepository {
         return SwitchRepositoryImpl(context)

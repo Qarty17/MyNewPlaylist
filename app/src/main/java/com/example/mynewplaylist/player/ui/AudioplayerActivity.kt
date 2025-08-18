@@ -40,10 +40,6 @@ class AudioplayerActivity : AppCompatActivity() {
             RoundedCorners(8)
         ).into(binding.cover)
         url=intent.extras?.getString("previewUrl").toString()
-//        val viewModel: PlayerViewModel by viewModel<PlayerViewModel>{
-//            parametersOf(url)
-//        }
-        //viewModel= ViewModelProvider(this, PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
         viewModel.observePlayerProgressLiveData().observe(this) {
             changeButton(it.player== PlayerViewModel.STATE_PLAYING)
             enableButton(it.player!= PlayerViewModel.STATE_DEFAULT)

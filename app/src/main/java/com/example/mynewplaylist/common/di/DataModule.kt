@@ -3,6 +3,7 @@ package com.example.mynewplaylist.common.di
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.media.MediaPlayer
 import com.example.mynewplaylist.common.data.StorageClient
 import com.example.mynewplaylist.common.data.storage.PrefsStorageClient
 import com.example.mynewplaylist.search.data.HistoryRepositoryImpl
@@ -15,6 +16,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import org.koin.dsl.single
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -31,6 +33,9 @@ val dataModule= module {
             .getSharedPreferences("PLAYLIST_SEARCH", Context.MODE_PRIVATE)
     }
     factory { Gson() }
+    single<MediaPlayer>{
+        MediaPlayer()
+    }
     single<HistoryRepository> {
         HistoryRepositoryImpl(get())
     }

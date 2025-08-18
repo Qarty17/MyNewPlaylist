@@ -9,29 +9,26 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isNotEmpty
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mynewplaylist.creator.Creator
 import com.example.mynewplaylist.databinding.ActivitySearchBinding
 import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.main.ui.MainActivity
 import com.example.mynewplaylist.player.ui.AudioplayerActivity
 import com.example.mynewplaylist.search.presentation.PlaylistViewModel
 import com.example.mynewplaylist.search.presentation.TrackAdapter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
     private var simpleTextWatcher: TextWatcher? = null
-    private val viewModel: PlaylistViewModel by viewModels()
+    private val viewModel: PlaylistViewModel by viewModel()
     private lateinit var binding: ActivitySearchBinding
     private lateinit var historyAdapter: TrackAdapter
     private val tracks = ArrayList<Track>()
     private lateinit var adapter: TrackAdapter
-    private val creator=Creator
     var newValue = VALUE_DEF
     @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -166,7 +163,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         binding.updateButton.setOnClickListener {
             showLoading()
             viewModel.searchDebounce(binding.inputEdittext.text.toString())
-            creator.provideTrackInteractor()
         }
         binding.historyButton.setOnClickListener {
             viewModel.clearHistory()

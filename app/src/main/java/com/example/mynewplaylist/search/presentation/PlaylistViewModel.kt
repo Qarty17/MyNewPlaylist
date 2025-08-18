@@ -7,29 +7,25 @@ import android.os.SystemClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.mynewplaylist.creator.Creator
+import com.example.mynewplaylist.search.domain.api.HistoryInteractor
 import com.example.mynewplaylist.search.domain.api.TrackIntercator
 import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.search.ui.PlaylistState
 import kotlinx.coroutines.Runnable
 
-class PlaylistViewModel(): ViewModel() {
-    val historyProvider= Creator.provideHistoryInteractor()
+class PlaylistViewModel(private val trackIntercator: TrackIntercator,private val historyIntercator: HistoryInteractor): ViewModel() {
     private var latestSearchText: String? = null
-
-    private val searchLiveData= MutableLiveData(SearchState(historyProvider.getHistory(),PlaylistState.Content(arrayListOf())))
+    private val searchLiveData= MutableLiveData(SearchState(historyIntercator.getHistory(),PlaylistState.Content(arrayListOf())))
     fun observeSearch(): LiveData<SearchState> = searchLiveData
-    private val provider= Creator.provideTrackInteractor()
     private var isClickAllowed = true
     private val handler: Handler = Handler(Looper.getMainLooper())
-
     fun searchCreate(newSearchText:String){
         if (newSearchText.isNotEmpty()){
             renderState(
                 PlaylistState.Loading
             )
         }
-        provider.searchTracks(newSearchText, object : TrackIntercator.TrackConsumer{
+        trackIntercator.searchTracks(newSearchText, object : TrackIntercator.TrackConsumer{
             override fun consume(foundTracks: List<Track>?, errorMessage: String?) {
                 handler.post{
                     val tracks=arrayListOf<Track>()
@@ -61,10 +57,10 @@ class PlaylistViewModel(): ViewModel() {
         })
     }
     fun getHistory(): ArrayList<Track>{
-        return historyProvider.getHistory()
+        return historyIntercator.getHistory()
     }
     fun clearHistory(){
-        historyProvider.clearHistory()
+        historyIntercator.clearHistory()
     }
     fun onTrackClick(track: Track) {
         searchLiveData.value?.history=getHistory()
@@ -79,7 +75,7 @@ class PlaylistViewModel(): ViewModel() {
                 }
             }
         }
-        historyProvider.saveHistory(searchLiveData.value?.history!!)
+        historyIntercator.saveHistory(searchLiveData.value?.history!!)
     }
     fun searchDebounce(changedText: String){
         if(latestSearchText==changedText)

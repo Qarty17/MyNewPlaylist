@@ -9,13 +9,19 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
 import com.example.mynewplaylist.databinding.AudioPlayerBinding
 import com.example.mynewplaylist.player.presentation.PlayerViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class AudioplayerActivity : AppCompatActivity() {
     private lateinit var binding: AudioPlayerBinding
-    private lateinit var viewModel: PlayerViewModel
+    private lateinit var url: String
+    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel>(){
+        parametersOf(url)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding= AudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.menuButton.setOnClickListener {
@@ -33,9 +39,11 @@ class AudioplayerActivity : AppCompatActivity() {
         Glide.with(applicationContext).load(newart).placeholder(R.drawable.vector3).transform(
             RoundedCorners(8)
         ).into(binding.cover)
-        val url=intent.extras?.getString("previewUrl").toString()
-
-        viewModel= ViewModelProvider(this, PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
+        url=intent.extras?.getString("previewUrl").toString()
+//        val viewModel: PlayerViewModel by viewModel<PlayerViewModel>{
+//            parametersOf(url)
+//        }
+        //viewModel= ViewModelProvider(this, PlayerViewModel.getFactory(url))[PlayerViewModel::class.java]
         viewModel.observePlayerProgressLiveData().observe(this) {
             changeButton(it.player== PlayerViewModel.STATE_PLAYING)
             enableButton(it.player!= PlayerViewModel.STATE_DEFAULT)

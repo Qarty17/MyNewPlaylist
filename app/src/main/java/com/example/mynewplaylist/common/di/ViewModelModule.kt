@@ -1,0 +1,19 @@
+package com.example.mynewplaylist.common.di
+
+import com.example.mynewplaylist.player.presentation.PlayerViewModel
+import com.example.mynewplaylist.search.presentation.PlaylistViewModel
+import com.example.mynewplaylist.settings.presentation.SettingsViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
+
+val viewModelModule=module{
+    viewModel {
+        PlaylistViewModel(get(),get())
+    }
+    viewModel{(url: String)->
+        PlayerViewModel(get(),url)
+    }
+    viewModel {
+        SettingsViewModel(get(),get())
+    }
+}

@@ -27,43 +27,43 @@ import com.example.mynewplaylist.sharing.domain.SharingInteractor
 import com.example.mynewplaylist.sharing.domain.impl.SharingInteractorImpl
 import com.google.gson.reflect.TypeToken
 
-object Creator {
-    private lateinit var application: Application
-    fun initApplication(application: Application){
-        this.application=application
-    }
-    private fun getTracksRepository(): TracksRepository {
-        return TracksRepositoryImpl(RetrofitNetworkClient(application))
-    }
-    fun provideTrackInteractor(): TrackIntercator {
-        return TrackInteractorImpl(getTracksRepository())
-    }
-    private fun getHistoryRepository(): HistoryRepository {
-        return HistoryRepositoryImpl(PrefsStorageClient<ArrayList<Track>>(
-            application,
-            "history",
-            object : TypeToken<ArrayList<Track>>(){}.type))
-    }
-    fun provideHistoryInteractor(): HistoryInteractor {
-        return HistoryInteractorImpl(getHistoryRepository())
-    }
-    private fun getSwitchRepository(context: Context): SwitchRepository {
-        return SwitchRepositoryImpl(context)
-    }
-    fun provideSwitchInteractor(context: Context): SwitchInteractor {
-        return SwitchInteractorImpl(getSwitchRepository(context))
-    }
-    private fun getThemeRepository(context: Context): ThemeRepository {
-        return ThemeRepositoryImpl(context)
-    }
-    fun provideThemeInteractor(context: Context): ThemeInteractor {
-        return ThemeInteractorImpl(getThemeRepository(context))
-    }
-
-    private fun getExternalNavigator(context: Context): ExternalNavigator{
-        return ExternalNavigatorImpl(context)
-    }
-    fun provideSharingInteractor(context: Context): SharingInteractor{
-        return SharingInteractorImpl(getExternalNavigator(context))
-    }
-}
+//object Creator {
+//    private lateinit var application: Application
+//    fun initApplication(application: Application){
+//        this.application=application
+//    }
+//    private fun getTracksRepository(): TracksRepository {
+//        return TracksRepositoryImpl(RetrofitNetworkClient(application))
+//    }
+//    fun provideTrackInteractor(): TrackIntercator {
+//        return TrackInteractorImpl(getTracksRepository())
+//    }
+//    private fun getHistoryRepository(): HistoryRepository {
+//        return HistoryRepositoryImpl(PrefsStorageClient<ArrayList<Track>>(
+//            application,
+//            "history",
+//            object : TypeToken<ArrayList<Track>>(){}.type))
+//    }
+//    fun provideHistoryInteractor(): HistoryInteractor {
+//        return HistoryInteractorImpl(getHistoryRepository())
+//    }
+//    private fun getSwitchRepository(context: Context): SwitchRepository {
+//        return SwitchRepositoryImpl(context)
+//    }
+//    fun provideSwitchInteractor(context: Context): SwitchInteractor {
+//        return SwitchInteractorImpl(getSwitchRepository(context))
+//    }
+//    private fun getThemeRepository(context: Context): ThemeRepository {
+//        return ThemeRepositoryImpl(context)
+//    }
+//    fun provideThemeInteractor(context: Context): ThemeInteractor {
+//        return ThemeInteractorImpl(getThemeRepository(context))
+//    }
+//
+//    private fun getExternalNavigator(context: Context): ExternalNavigator{
+//        return ExternalNavigatorImpl(context)
+//    }
+//    fun provideSharingInteractor(context: Context): SharingInteractor{
+//        return SharingInteractorImpl(getExternalNavigator(context))
+//    }
+//}

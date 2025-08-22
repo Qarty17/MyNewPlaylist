@@ -1,7 +1,6 @@
 package com.example.mynewplaylist.search.data
 
 import com.example.mynewplaylist.creator.Resource
-import com.example.mynewplaylist.search.data.NetworkClient
 import com.example.mynewplaylist.search.domain.api.TracksRepository
 import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.search.data.dto.PlaylistRequest

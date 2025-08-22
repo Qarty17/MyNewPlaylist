@@ -3,15 +3,25 @@ package com.example.mynewplaylist.settings.ui
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.example.mynewplaylist.creator.Creator
+import com.example.mynewplaylist.common.di.dataModule
+import com.example.mynewplaylist.common.di.interactorModule
+import com.example.mynewplaylist.common.di.repositoryModule
+import com.example.mynewplaylist.common.di.viewModelModule
+import com.example.mynewplaylist.settings.domain.api.ThemeInteractor
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 
 class App: Application() {
     private var darkTheme=false
+    private val themeInteractor: ThemeInteractor by inject()
     override fun onCreate() {
         super.onCreate()
-        Creator.initApplication(this)
-        val manager= Creator.provideThemeInteractor(this)
-        darkTheme=manager.getSavedTheme()
+        startKoin {
+            androidContext(this@App)
+            modules(dataModule, interactorModule, repositoryModule, viewModelModule)
+        }
+        darkTheme=themeInteractor.getSavedTheme()
         if (darkTheme){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }else{
@@ -20,14 +30,13 @@ class App: Application() {
 
     }
     fun switchTheme(darkThemeEnabled: Boolean){
-        val manager=Creator.provideThemeInteractor(this)
         darkTheme=darkThemeEnabled
         AppCompatDelegate.setDefaultNightMode(
             if(darkThemeEnabled){
-                manager.saveTheme(darkTheme)
+                themeInteractor.saveTheme(darkTheme)
                 AppCompatDelegate.MODE_NIGHT_YES
             }else{
-                manager.saveTheme(darkTheme)
+                themeInteractor.saveTheme(darkTheme)
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )

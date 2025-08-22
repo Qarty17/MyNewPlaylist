@@ -14,20 +14,15 @@ import kotlinx.coroutines.Runnable
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val url: String): ViewModel() {
+class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: String): ViewModel() {
     companion object{
         const val STATE_DEFAULT=0
         const val STATE_PREPARED=1
         const val STATE_PLAYING=2
         const val STATE_PAUSED=3
-        fun getFactory(trackUrl:String): ViewModelProvider.Factory= viewModelFactory {
-            initializer {
-                PlayerViewModel(trackUrl)
-            }
-        }
     }
 
-    private val mediaPlayer= MediaPlayer()
+    //private val mediaPlayer= MediaPlayer()
     private val handler: Handler = Handler(Looper.getMainLooper())
 
     private val playerProgressLiveData= MutableLiveData<PlayerState>(PlayerState(STATE_DEFAULT,"0:00"))

@@ -1,5 +1,9 @@
 package com.example.mynewplaylist.common.di
 
+import com.example.mynewplaylist.common.di.viewModelModule
+import com.example.mynewplaylist.media.presentation.FavoriteTracksViewModel
+import com.example.mynewplaylist.media.presentation.MediaViewModel
+import com.example.mynewplaylist.media.presentation.NewPlaylistViewModel
 import com.example.mynewplaylist.player.presentation.PlayerViewModel
 import com.example.mynewplaylist.search.presentation.PlaylistViewModel
 import com.example.mynewplaylist.settings.presentation.SettingsViewModel
@@ -15,5 +19,14 @@ val viewModelModule=module{
     }
     viewModel {
         SettingsViewModel(get(),get())
+    }
+    viewModel{
+        NewPlaylistViewModel()
+    }
+    viewModel{
+        FavoriteTracksViewModel()
+    }
+    viewModel{
+        MediaViewModel()
     }
 }

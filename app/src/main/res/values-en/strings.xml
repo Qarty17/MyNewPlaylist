@@ -22,5 +22,10 @@
     <string name="year">Year</string>
     <string name="genre">Genre</string>
     <string name="Country">Country</string>
-
+    <string name="Medidlibrary">Media library</string>
+    <string name="new_playlist">New Playlist</string>
+    <string name="not_favorite_tracks">Your library is empty</string>
+    <string name="not_playlists">You haven"'"t created\n any playlists</string>
+    <string name="favorite_tracks">Favorite tracks</string>
+    <string name="playlists">Playlists</string>
 </resources>

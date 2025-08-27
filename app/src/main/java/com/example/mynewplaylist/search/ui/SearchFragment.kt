@@ -1,46 +1,59 @@
 package com.example.mynewplaylist.search.ui
 
 import android.annotation.SuppressLint
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.fragment.app.Fragment
+
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.mynewplaylist.databinding.ActivitySearchBinding
+import com.example.mynewplaylist.R
+import com.example.mynewplaylist.databinding.FragmentSearchBinding
+
+import com.example.mynewplaylist.player.ui.AudioplayerFragment
 import com.example.mynewplaylist.search.domain.models.Track
-import com.example.mynewplaylist.main.ui.MainActivity
-import com.example.mynewplaylist.player.ui.AudioplayerActivity
 import com.example.mynewplaylist.search.presentation.PlaylistViewModel
 import com.example.mynewplaylist.search.presentation.TrackAdapter
+
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.getValue
+import kotlin.toString
 
-class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
-
+class SearchFragment: Fragment(), TrackAdapter.Listener {
     private var simpleTextWatcher: TextWatcher? = null
     private val viewModel: PlaylistViewModel by viewModel()
-    private lateinit var binding: ActivitySearchBinding
     private lateinit var historyAdapter: TrackAdapter
     private val tracks = ArrayList<Track>()
     private lateinit var adapter: TrackAdapter
     var newValue = VALUE_DEF
-    @SuppressLint("NotifyDataSetChanged")
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private lateinit var binding: FragmentSearchBinding
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding= FragmentSearchBinding.inflate(inflater,container,false)
+        return binding.root
+    }
 
-        viewModel.observeSearch().observe (this){
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.observeSearch().observe (viewLifecycleOwner){
             render(it.state!!)
             historyAdapter.tracks=it.history
         }
-
-        binding= ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         if (savedInstanceState != null) {
             newValue = savedInstanceState.getString(VALUE, VALUE_DEF)
         }
@@ -48,7 +61,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         adapter= TrackAdapter(this) { track ->
             viewModel.onTrackClick(track)
         }
-        binding.recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         adapter.tracks = tracks
         binding.recyclerView.adapter = adapter
         historyAdapter= TrackAdapter(this) { track ->
@@ -56,7 +69,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
                 viewModel.onTrackClick(track)
             }
         }
-        binding.recyclerViewHistory.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.recyclerViewHistory.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.recyclerViewHistory.adapter = historyAdapter
 
         if (historyAdapter.tracks.isNotEmpty()){
@@ -66,18 +79,12 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
             binding.history.visibility= View.GONE
         }
 
-        binding.back2.setOnClickListener {
-            val intent=Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            //historyAdapter.tracks=method1()
-        }
         binding.inputEdittext.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 true
             }
             false
         }
-
         simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
@@ -133,16 +140,15 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
             }
             binding.history.visibility =
-            if (hasFocus && binding.inputEdittext.text.isEmpty() && historyAdapter.tracks.isNotEmpty()) View.VISIBLE else View.GONE
+                if (hasFocus && binding.inputEdittext.text.isEmpty() && historyAdapter.tracks.isNotEmpty()) View.VISIBLE else View.GONE
 
             historyAdapter.notifyDataSetChanged()
         }
-
         binding.clearIcon.setOnClickListener {
-            val view: View? = this.currentFocus
+            val view: View? = activity?.currentFocus
             if (view != null) {
                 val inputMethodManager =
-                    getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+                    requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                 inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
             }
             binding.inputEdittext.setText("")
@@ -181,17 +187,29 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
         }
     }
     override fun onClick(track: Track) {
-        val intent= Intent(this, AudioplayerActivity::class.java)
-        intent.putExtra(NAME,track.trackName)
-        intent.putExtra(NAME_ARTIST,track.artistName)
-        intent.putExtra(DURATION,SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
-        intent.putExtra(ALBUM,track.collectionName)
-        intent.putExtra(YEAR,track.releaseDate)
-        intent.putExtra(GENRE,track.primaryGenreName)
-        intent.putExtra(COUNTRY,track.country)
-        intent.putExtra(ARTWORK,track.artworkUrl100)
-        intent.putExtra(PREVIEWURL,track.previewUrl)
-        startActivity(intent)
+        findNavController().navigate(R.id.action_searchFragment_to_audioplayerFragment,
+            AudioplayerFragment.createArgs(
+                track.trackName,
+                track.artistName,
+                SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis),
+                track.collectionName,
+                track.primaryGenreName,
+                track.country,
+                track.releaseDate,
+                track.artworkUrl100,
+                track.previewUrl
+            ))
+//        val intent= Intent(this, AudioplayerActivity::class.java)
+//        intent.putExtra(NAME,track.trackName)
+//        intent.putExtra(NAME_ARTIST,track.artistName)
+//        intent.putExtra(DURATION,SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
+//        intent.putExtra(ALBUM,track.collectionName)
+//        intent.putExtra(YEAR,track.releaseDate)
+//        intent.putExtra(GENRE,track.primaryGenreName)
+//        intent.putExtra(COUNTRY,track.country)
+//        intent.putExtra(ARTWORK,track.artworkUrl100)
+//        intent.putExtra(PREVIEWURL,track.previewUrl)
+//        startActivity(intent)
     }
     companion object {
         const val NAME="name"
@@ -271,14 +289,4 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.Listener {
 
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        simpleTextWatcher.let { binding.inputEdittext.removeTextChangedListener(it) }
-    }
 }
-
-
-
-
-

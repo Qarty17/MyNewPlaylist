@@ -1,6 +1,5 @@
 package com.example.mynewplaylist.common.di
 
-import com.example.mynewplaylist.common.di.viewModelModule
 import com.example.mynewplaylist.media.presentation.FavoriteTracksViewModel
 import com.example.mynewplaylist.media.presentation.MediaViewModel
 import com.example.mynewplaylist.media.presentation.NewPlaylistViewModel

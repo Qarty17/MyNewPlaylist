@@ -22,6 +22,7 @@ class SettingsViewModel(private val sharingInteractor: SharingInteractor, privat
     }
     fun saveSwitch(isTrue: Boolean){
         switchInteractor.saveSwitcher(isTrue)
+        switchLiveData.value=isTrue
     }
 
 

@@ -1,9 +1,9 @@
 package com.example.mynewplaylist.settings.data.impl
 
-import android.content.Context
+
 import android.content.SharedPreferences
 
-import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
+
 import androidx.core.content.edit
 import com.example.mynewplaylist.settings.domain.api.ThemeRepository
 

@@ -5,15 +5,17 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:theme="@style/Theme.MyNewPlaylist">
 
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue"
+        android:background="?attr/colorPrimary"
         android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
+
         >
 
         <TextView
@@ -37,6 +39,7 @@
             android:orientation="vertical">
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:id="@+id/search"
                 android:backgroundTint="@color/white"
                 android:layout_width="match_parent"
@@ -47,16 +50,17 @@
                 android:padding="@dimen/padding"
                 android:textAllCaps="false"
                 android:text="@string/search"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnPrimaryContainer"
                 android:textSize="@dimen/textMainSize"
                 app:cornerRadius="@dimen/cornerRadius"
                 app:icon="@drawable/light_mode"
                 app:iconPadding="@dimen/padding"
                 app:iconGravity="textStart"
-                app:iconTint="@color/black"
+                app:iconTint="?attr/colorOnPrimaryContainer"
                 />
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:id="@+id/media"
                 android:backgroundTint="@color/white"
                 android:layout_width="match_parent"
@@ -67,15 +71,16 @@
                 android:padding="@dimen/padding"
                 android:textAllCaps="false"
                 android:text="@string/media_library"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnPrimaryContainer"
                 android:textSize="@dimen/textMainSize"
                 app:cornerRadius="@dimen/cornerRadius"
                 app:icon="@drawable/light_mode2"
                 app:iconPadding="@dimen/padding"
                 app:iconGravity="textStart"
-                app:iconTint="@color/black"/>
+                app:iconTint="?attr/colorOnPrimaryContainer"/>
 
             <Button
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:id="@+id/settings"
                 android:backgroundTint="@color/white"
                 android:layout_width="match_parent"
@@ -87,13 +92,13 @@
                 android:padding="@dimen/padding"
                 android:textAllCaps="false"
                 android:text="@string/settings"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnPrimaryContainer"
                 android:textSize="@dimen/textMainSize"
                 app:cornerRadius="@dimen/cornerRadius"
                 app:icon="@drawable/light_mode3"
                 app:iconPadding="@dimen/padding"
                 app:iconGravity="textStart"
-                app:iconTint="@color/black"/>
+                app:iconTint="?attr/colorOnPrimaryContainer"/>
         </LinearLayout>
 
 

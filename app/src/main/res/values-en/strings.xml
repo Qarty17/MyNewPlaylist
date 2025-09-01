@@ -9,4 +9,18 @@
     <string name="support">Write to support</string>
     <string name="user_agreement">User agreement</string>
     <string name="back">back</string>
+    <string name="message_developer">Message to the developers and developers of the Playlist Maker app</string>
+    <string name="thanks">Thanks to the developers and developers for the cool app!</string>
+    <string name="not_found">Nothing was found</string>
+    <string name="not_internet">Communication problems\n\nThe download failed. Check your internet connection</string>
+    <string name="update">update</string>
+    <string name="history">you were looking for</string>
+    <string name="clear_history">clear the history</string>
+    <string name="_0_29">0:30</string>
+    <string name="duration">Duration</string>
+    <string name="album">Album</string>
+    <string name="year">Year</string>
+    <string name="genre">Genre</string>
+    <string name="Country">Country</string>
+
 </resources>

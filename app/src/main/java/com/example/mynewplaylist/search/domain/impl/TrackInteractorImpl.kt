@@ -1,6 +1,6 @@
 package com.example.mynewplaylist.search.domain.impl
 
-import com.example.mynewplaylist.creator.Resource
+import com.example.mynewplaylist.common.Resource
 import com.example.mynewplaylist.search.domain.api.TrackIntercator
 import com.example.mynewplaylist.search.domain.api.TracksRepository
 import java.util.concurrent.Executors

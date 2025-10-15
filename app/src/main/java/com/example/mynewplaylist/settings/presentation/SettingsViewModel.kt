@@ -20,16 +20,10 @@ class SettingsViewModel(private val sharingInteractor: SharingInteractor, privat
     fun openingTerms(){
         sharingInteractor.openTerms()
     }
-
     fun saveSwitch(isTrue: Boolean){
         switchInteractor.saveSwitcher(isTrue)
+        switchLiveData.value=isTrue
     }
-//    companion object{
-//        fun getFactory(sharing: SharingInteractor, switch: SwitchInteractor, theme: ThemeInteractor): ViewModelProvider.Factory=
-//            viewModelFactory {
-//                initializer {
-//                    SettingsViewModel(sharing, switch)
-//                }
-//            }
-//    }
+
+
 }

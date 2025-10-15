@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:theme="@style/Theme.MyNewPlaylist"
-    android:background="?attr/colorPrimaryVariant">
+    android:background="?attr/colorPrimaryVariant"
+    tools:context=".media.ui.TracksFragment">
 
     <ImageView
         android:id="@+id/image_not_found"

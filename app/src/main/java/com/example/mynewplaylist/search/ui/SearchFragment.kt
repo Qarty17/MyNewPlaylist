@@ -14,6 +14,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,6 +25,8 @@ import com.example.mynewplaylist.player.ui.AudioplayerFragment
 import com.example.mynewplaylist.search.domain.models.Track
 import com.example.mynewplaylist.search.presentation.PlaylistViewModel
 import com.example.mynewplaylist.search.presentation.TrackAdapter
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -35,6 +38,7 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
     private var simpleTextWatcher: TextWatcher? = null
     private val viewModel: PlaylistViewModel by viewModel()
     private lateinit var historyAdapter: TrackAdapter
+    private var isClickAllowed = true
     private val tracks = ArrayList<Track>()
     private lateinit var adapter: TrackAdapter
     var newValue = VALUE_DEF
@@ -52,6 +56,7 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
         viewModel.observeSearch().observe (viewLifecycleOwner){
             render(it.state!!)
+
             historyAdapter.tracks=it.history
         }
         if (savedInstanceState != null) {
@@ -65,7 +70,7 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
         adapter.tracks = tracks
         binding.recyclerView.adapter = adapter
         historyAdapter= TrackAdapter(this) { track ->
-            if (viewModel.clickDebounce()) {
+            if (clickDebounce()) {
                 viewModel.onTrackClick(track)
             }
         }
@@ -102,6 +107,7 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
 
                 }else{
                     viewModel.clearHandler()
+                    viewModel.clearText()
                     binding.history.visibility = if (p0?.isEmpty() == true && historyAdapter.tracks.isNotEmpty()) {
                         binding.apply {
                             recyclerView.visibility = View.GONE
@@ -135,9 +141,7 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
         simpleTextWatcher.let { binding.inputEdittext.addTextChangedListener(it) }
         binding.inputEdittext.setOnFocusChangeListener { view, hasFocus ->
             if(binding.inputEdittext.text.isEmpty()){
-                //showEmpty()
                 showContent(arrayListOf())
-
             }
             binding.history.visibility =
                 if (hasFocus && binding.inputEdittext.text.isEmpty() && historyAdapter.tracks.isNotEmpty()) View.VISIBLE else View.GONE
@@ -151,6 +155,7 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
                     requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
                 inputMethodManager?.hideSoftInputFromWindow(view.windowToken, 0)
             }
+            viewModel.clearText()
             binding.inputEdittext.setText("")
             tracks.clear()
             adapter.notifyDataSetChanged()
@@ -199,33 +204,25 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
                 track.artworkUrl100,
                 track.previewUrl
             ))
-//        val intent= Intent(this, AudioplayerActivity::class.java)
-//        intent.putExtra(NAME,track.trackName)
-//        intent.putExtra(NAME_ARTIST,track.artistName)
-//        intent.putExtra(DURATION,SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis))
-//        intent.putExtra(ALBUM,track.collectionName)
-//        intent.putExtra(YEAR,track.releaseDate)
-//        intent.putExtra(GENRE,track.primaryGenreName)
-//        intent.putExtra(COUNTRY,track.country)
-//        intent.putExtra(ARTWORK,track.artworkUrl100)
-//        intent.putExtra(PREVIEWURL,track.previewUrl)
-//        startActivity(intent)
     }
     companion object {
-        const val NAME="name"
         const val VALUE = "VALUE"
         const val VALUE_DEF = ""
-        const val NAME_ARTIST="name_artist"
-        const val DURATION="duration"
-        const val ALBUM="album"
-        const val YEAR="year"
-        const val GENRE="genre"
-        const val COUNTRY="country"
-        const val ARTWORK="artwork"
-        const val PREVIEWURL="previewUrl"
+
     }
     override fun addName(track: Track): String{
         return track.trackName
+    }
+    fun clickDebounce():Boolean{
+        val current=isClickAllowed
+        if(isClickAllowed){
+            isClickAllowed=false
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(1000L)
+                isClickAllowed=true
+            }
+        }
+        return current
     }
     fun showLoading(){
         binding.apply {

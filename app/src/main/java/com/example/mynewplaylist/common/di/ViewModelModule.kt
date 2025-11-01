@@ -1,5 +1,8 @@
 package com.example.mynewplaylist.common.di
 
+import com.example.mynewplaylist.media.domain.db.HistoryMediaInteractor
+import com.example.mynewplaylist.media.domain.db.HistoryMediaRepository
+import com.example.mynewplaylist.media.domain.impl.HistoryMediaInteractorImpl
 import com.example.mynewplaylist.media.presentation.FavoriteTracksViewModel
 import com.example.mynewplaylist.media.presentation.MediaViewModel
 import com.example.mynewplaylist.media.presentation.NewPlaylistViewModel
@@ -14,7 +17,7 @@ val viewModelModule=module{
         PlaylistViewModel(get(),get())
     }
     viewModel{(url: String)->
-        PlayerViewModel(get(),url)
+        PlayerViewModel(get(),url, get())
     }
     viewModel {
         SettingsViewModel(get(),get())

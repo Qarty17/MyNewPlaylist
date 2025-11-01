@@ -5,7 +5,4 @@ import kotlinx.coroutines.flow.Flow
 
 interface TrackIntercator {
     fun searchTracks(expression:String): Flow<Pair<List<Track>?, String?>>
-//    interface TrackConsumer{
-//        fun consume(foundTracks:List<Track>?, errorMessage: String?)
-//    }
 }

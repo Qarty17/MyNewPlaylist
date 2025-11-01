@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.mynewplaylist.player.presentation.PlayerState
+import com.example.mynewplaylist.media.domain.db.HistoryMediaInteractor
+import com.example.mynewplaylist.search.data.dto.TrackDto
+import com.example.mynewplaylist.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
@@ -18,9 +20,11 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: String): ViewModel() {
+class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: String,private val historyMediaInteractor: HistoryMediaInteractor): ViewModel() {
     private var timerJob:Job? = null
     private val playerState= MutableLiveData<PlayerState2>(PlayerState2.Default())
+    private val favoriteState= MutableLiveData<FavoriteState>(FavoriteState.IsNotFavorite())
+    fun observeFavoriteState(): LiveData<FavoriteState> = favoriteState
     fun observePlayerState(): LiveData<PlayerState2> = playerState
     init {
         preparePlayer()
@@ -78,6 +82,7 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: Stri
         playerState.postValue(PlayerState2.Default())
     }
     private fun startTimer(){
+        timerJob?.cancel()
         timerJob=viewModelScope.launch {
             while (mediaPlayer.isPlaying){
                 delay(300L)
@@ -87,5 +92,13 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: Stri
     }
     private fun getCurrentPlayerPosition(): String{
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)?:"00:00"
+    }
+    suspend fun onFavoriteClicked(track: Track){
+        if (track.isFavorite==false){
+            historyMediaInteractor.insertTrack(track)
+            favoriteState.postValue(FavoriteState.IsFavorite())
+        }
+        historyMediaInteractor.deleteTrack(track)
+        favoriteState.postValue(FavoriteState.IsNotFavorite())
     }
 }

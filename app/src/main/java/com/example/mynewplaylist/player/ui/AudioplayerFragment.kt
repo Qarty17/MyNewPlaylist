@@ -14,8 +14,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
 import com.example.mynewplaylist.databinding.FragmentAudioPlayerBinding
-import com.example.mynewplaylist.player.presentation.PlayerState
-import com.example.mynewplaylist.player.presentation.PlayerState2
+import com.example.mynewplaylist.player.presentation.FavoriteState
+
 import com.example.mynewplaylist.player.presentation.PlayerViewModel
 import com.example.mynewplaylist.search.domain.models.Track
 
@@ -90,11 +90,17 @@ class AudioplayerFragment: Fragment() {
         binding.view2.setOnClickListener{
             viewModel.onPlayButtonClicked()
         }
+        binding.view3.setOnClickListener {
+            changeButtonFavorite(true)
+        }
         viewModel.observePlayerState().observe(viewLifecycleOwner){
             binding.view2.isEnabled=it.isPlayButtonPlaying
             changeButton(it.isPlayButtonPlaying)
             enableButton(it.isPlayButtonEnabled)
             binding.timer.text=it.progress
+        }
+        viewModel.observeFavoriteState().observe(viewLifecycleOwner) {
+            binding.view3.isEnabled=it.isFavorite
         }
 
     }
@@ -103,6 +109,12 @@ class AudioplayerFragment: Fragment() {
     }
     private fun enableButton(isEnabled: Boolean){
         binding.view2.isEnabled=isEnabled
+    }
+    private fun changeButtonFavorite(isFavorite: Boolean){
+        if(isFavorite){
+            binding.view3.setImageDrawable(getDrawable(requireContext(),R.drawable.button))
+        }
+        binding.view3.setImageDrawable(getDrawable(requireContext(),R.drawable.like))
     }
     private fun changeButton(isPlaying: Boolean) {
         if(isPlaying){

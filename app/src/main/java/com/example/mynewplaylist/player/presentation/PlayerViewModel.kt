@@ -93,12 +93,15 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: Stri
     private fun getCurrentPlayerPosition(): String{
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)?:"00:00"
     }
-    suspend fun onFavoriteClicked(track: Track){
-        if (track.isFavorite==false){
-            historyMediaInteractor.insertTrack(track)
-            favoriteState.postValue(FavoriteState.IsFavorite())
+    fun onFavoriteClicked(track: Track){
+        viewModelScope.launch {
+            if (track.isFavorite==false){
+                historyMediaInteractor.insertTrack(track)
+                favoriteState.postValue(FavoriteState.IsFavorite())
+            }
+            historyMediaInteractor.deleteTrack(track)
+            favoriteState.postValue(FavoriteState.IsNotFavorite())
         }
-        historyMediaInteractor.deleteTrack(track)
-        favoriteState.postValue(FavoriteState.IsNotFavorite())
+
     }
 }

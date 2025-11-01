@@ -8,13 +8,18 @@ import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
 import com.example.mynewplaylist.databinding.FragmentAudioPlayerBinding
+import com.example.mynewplaylist.player.presentation.PlayerState
+import com.example.mynewplaylist.player.presentation.PlayerState2
 import com.example.mynewplaylist.player.presentation.PlayerViewModel
 import com.example.mynewplaylist.search.domain.models.Track
+
+import kotlinx.coroutines.Job
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -82,14 +87,16 @@ class AudioplayerFragment: Fragment() {
             RoundedCorners(8)
         ).into(binding.cover)
         url= requireArguments().getString(PREVIEWURL).toString()
-        viewModel.observePlayerProgressLiveData().observe(viewLifecycleOwner) {
-            changeButton(it.player== PlayerViewModel.STATE_PLAYING)
-            enableButton(it.player!= PlayerViewModel.STATE_DEFAULT)
-            binding.timer.text=it.progress
-        }
         binding.view2.setOnClickListener{
             viewModel.onPlayButtonClicked()
         }
+        viewModel.observePlayerState().observe(viewLifecycleOwner){
+            binding.view2.isEnabled=it.isPlayButtonPlaying
+            changeButton(it.isPlayButtonPlaying)
+            enableButton(it.isPlayButtonEnabled)
+            binding.timer.text=it.progress
+        }
+
     }
     private fun getCoverArtwork(url: String?): String{
         return url?.replaceAfterLast('/',"512x512bb.jpg").toString()

@@ -19,14 +19,25 @@ class HistoryMediaRepositoryImpl(
         appDataBase.trackDao().insertTracks(track)
     }
 
-    override fun deleteTrack(track: Track) {
-        convertFromTrackEntity(track)
+    override suspend fun deleteTrack(track: Track) {
+        val track=convertFromTrackEntity(track)
+        appDataBase.trackDao().deleteTracks(track)
     }
 
-    override fun historyTracks(): Flow<List<Track>> = flow{
+    override suspend fun historyTracks(): Flow<List<Track>> = flow{
         val tracks=appDataBase.trackDao().getTracks()
         emit(convertFromTracksEntity(tracks))
     }
+
+    override suspend fun getIdTracks(trackId: Long): Flow<Long> {
+
+        return if(trackId==appDataBase.trackDao().getIdTracks(trackId).trackId.toLong()){
+            flow { trackId }
+        }else{
+            return flow { 0 }
+        }
+    }
+
     private fun convertFromTracksEntity(tracks: List<TrackEntity>): List<Track>{
         return tracks.map { track -> trackDbConvertor.map(track)}
     }

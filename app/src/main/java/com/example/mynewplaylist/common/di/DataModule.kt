@@ -22,7 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule= module {
     single {
-        Room.databaseBuilder(androidContext(), AppDataBase::class.java,"database.db")
+        Room.databaseBuilder(androidContext(), AppDataBase::class.java,"database.db").build()
     }
     single<PlaylistApi> {
         Retrofit.Builder()

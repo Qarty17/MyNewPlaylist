@@ -2,6 +2,7 @@ package com.example.mynewplaylist.player.ui
 
 import android.R.attr.track
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,12 +23,17 @@ import com.example.mynewplaylist.search.domain.models.Track
 import kotlinx.coroutines.Job
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.text.SimpleDateFormat
+import java.util.Locale
+import kotlin.toString
 
 class AudioplayerFragment: Fragment() {
     private lateinit var url: String
+    private lateinit var isFavorite: String
+    private lateinit var track: Track
     private lateinit var binding: FragmentAudioPlayerBinding
     private val viewModel: PlayerViewModel by viewModel<PlayerViewModel>{
-        parametersOf(url)
+        parametersOf(url,track)
     }
     companion object{
         private const val NAME="name"
@@ -39,15 +45,19 @@ class AudioplayerFragment: Fragment() {
         private const val YEAR="year"
         private const val ARTWORKURL="artworkurl"
         private const val PREVIEWURL="previewurl"
+        private const val ISFAVORITE="isFavorite"
+        private const val ID="id"
         fun createArgs(nameTrack: String,
                        artistTrack: String,
-                       duration: String,
+                       duration: Int,
                        album: String,
                        genre: String,
                        country: String,
                        year: String,
                        artworkUrl:String,
-                       previewUrl:String
+                       previewUrl:String,
+                       isFavorite: Boolean,
+                       id: String
 
         ): Bundle=
             bundleOf(NAME to nameTrack,
@@ -58,7 +68,9 @@ class AudioplayerFragment: Fragment() {
                 COUNTRY to country,
                 YEAR to year,
                 ARTWORKURL to artworkUrl,
-                PREVIEWURL to previewUrl)
+                PREVIEWURL to previewUrl,
+                ISFAVORITE to isFavorite,
+                ID to id)
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,6 +83,7 @@ class AudioplayerFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         binding.menuButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -87,11 +100,34 @@ class AudioplayerFragment: Fragment() {
             RoundedCorners(8)
         ).into(binding.cover)
         url= requireArguments().getString(PREVIEWURL).toString()
+        isFavorite=requireArguments().getString(ISFAVORITE).toString()
+        track= Track(
+            requireArguments().getString(NAME).toString(),
+            requireArguments().getString(ARTIST).toString(),
+            requireArguments().getString(DURATION)?.toInt() ?: 0,
+            requireArguments().getString(ARTWORKURL).toString(),
+            requireArguments().getString(ID).toString(),
+            requireArguments().getString(ALBUM).toString(),
+            requireArguments().getString(YEAR).toString(),
+            requireArguments().getString(GENRE).toString(),
+            requireArguments().getString(COUNTRY).toString(),
+            requireArguments().getString(PREVIEWURL).toString(),
+            requireArguments().getString(ISFAVORITE).toBoolean()
+
+        )
         binding.view2.setOnClickListener{
             viewModel.onPlayButtonClicked()
         }
         binding.view3.setOnClickListener {
-            changeButtonFavorite(true)
+            if(requireArguments().getString(ISFAVORITE).toBoolean()==false){
+                track.isFavorite=true
+                viewModel.onFavoriteClicked()
+            }else
+            {
+                track.isFavorite=false
+                viewModel.onFavoriteClicked()
+            }
+
         }
         viewModel.observePlayerState().observe(viewLifecycleOwner){
             binding.view2.isEnabled=it.isPlayButtonPlaying
@@ -100,7 +136,10 @@ class AudioplayerFragment: Fragment() {
             binding.timer.text=it.progress
         }
         viewModel.observeFavoriteState().observe(viewLifecycleOwner) {
-            binding.view3.isEnabled=it.isFavorite
+            enableButtonFavorite(true)
+            changeButtonFavorite(it.isFavorite)
+            Log.d("favorite", it.isFavorite.toString())
+
         }
 
     }
@@ -110,18 +149,26 @@ class AudioplayerFragment: Fragment() {
     private fun enableButton(isEnabled: Boolean){
         binding.view2.isEnabled=isEnabled
     }
-    private fun changeButtonFavorite(isFavorite: Boolean){
-        if(isFavorite){
-            binding.view3.setImageDrawable(getDrawable(requireContext(),R.drawable.button))
-        }
-        binding.view3.setImageDrawable(getDrawable(requireContext(),R.drawable.like))
-    }
+
     private fun changeButton(isPlaying: Boolean) {
         if(isPlaying){
             binding.view2.setImageDrawable(getDrawable(requireContext(),R.drawable.play))
         }else{
             binding.view2.setImageDrawable(getDrawable(requireContext(),R.drawable.pause))
         }
+    }
+    private fun enableButtonFavorite(isEnabled: Boolean){
+        binding.view3.isEnabled=isEnabled
+    }
+    private fun changeButtonFavorite(isFavorite: Boolean){
+        if(isFavorite){
+
+            binding.view3.setImageDrawable(getDrawable(requireContext(),R.drawable.button))
+        }
+        else{
+            binding.view3.setImageDrawable(getDrawable(requireContext(),R.drawable.like))
+        }
+
     }
     override fun onPause() {
         super.onPause()

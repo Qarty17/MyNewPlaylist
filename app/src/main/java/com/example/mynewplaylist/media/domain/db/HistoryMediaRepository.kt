@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface HistoryMediaRepository {
     suspend fun insertTrack(track: Track)
-    fun deleteTrack(track: Track)
-    fun historyTracks(): Flow<List<Track>>
+    suspend fun deleteTrack(track: Track)
+    suspend fun historyTracks(): Flow<List<Track>>
+    suspend fun getIdTracks(trackId: Long): Flow<Long>
 }

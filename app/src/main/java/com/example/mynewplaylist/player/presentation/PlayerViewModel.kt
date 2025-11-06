@@ -1,8 +1,10 @@
 package com.example.mynewplaylist.player.presentation
 
+import android.R.attr.track
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import androidx.annotation.Nullable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,11 +18,13 @@ import com.example.mynewplaylist.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: String,private val historyMediaInteractor: HistoryMediaInteractor): ViewModel() {
+class PlayerViewModel(private val mediaPlayer: MediaPlayer, private val url: String, private val track: Track,private val historyMediaInteractor: HistoryMediaInteractor): ViewModel() {
     private var timerJob:Job? = null
     private val playerState= MutableLiveData<PlayerState2>(PlayerState2.Default())
     private val favoriteState= MutableLiveData<FavoriteState>(FavoriteState.IsNotFavorite())
@@ -28,6 +32,7 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: Stri
     fun observePlayerState(): LiveData<PlayerState2> = playerState
     init {
         preparePlayer()
+        isFavorite()
     }
     fun onPause(){
         pausePlayer()
@@ -93,14 +98,30 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer,private val url: Stri
     private fun getCurrentPlayerPosition(): String{
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)?:"00:00"
     }
-    fun onFavoriteClicked(track: Track){
+    private fun isFavorite(){
         viewModelScope.launch {
-            if (track.isFavorite==false){
-                historyMediaInteractor.insertTrack(track)
+            if(historyMediaInteractor.getIdTrack(track.trackId.toLong())!=flow<Long> { 0 }){
+
                 favoriteState.postValue(FavoriteState.IsFavorite())
+            }else{
+                favoriteState.postValue(FavoriteState.IsNotFavorite())
             }
-            historyMediaInteractor.deleteTrack(track)
-            favoriteState.postValue(FavoriteState.IsNotFavorite())
+        }
+    }
+    fun onFavoriteClicked(){
+        viewModelScope.launch {
+            when(favoriteState.value){
+                is FavoriteState.IsFavorite->{
+                    favoriteState.postValue(FavoriteState.IsNotFavorite())
+                    historyMediaInteractor.deleteTrack(track)
+
+                }
+                else->{
+                    favoriteState.postValue(FavoriteState.IsFavorite())
+                    historyMediaInteractor.insertTrack(track )
+                }
+
+            }
         }
 
     }

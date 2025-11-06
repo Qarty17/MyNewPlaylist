@@ -196,13 +196,16 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
             AudioplayerFragment.createArgs(
                 track.trackName,
                 track.artistName,
-                SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis),
+                track.trackTimeMillis,
+                //SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis),
                 track.collectionName,
                 track.primaryGenreName,
                 track.country,
                 track.releaseDate,
                 track.artworkUrl100,
-                track.previewUrl
+                track.previewUrl,
+                track.isFavorite,
+                track.trackId
             ))
     }
     companion object {

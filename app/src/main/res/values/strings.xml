@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">MyNewPlaylist</string>
+    <string name="app_name">Playlist maker</string>
+    <string name="search">Поиск</string>
+    <string name="media_library">Медиатека</string>
+    <string name="settings">Настройки</string>
+    <string name="light_theme">Темная тема</string>
+    <string name="share_app">Поделиться приложением</string>
+    <string name="support">Написать в поддержку</string>
+    <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="back">Назад</string>
+    <string name="message_developer">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="thanks">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="link" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
+    <string name="appYandex" translatable="false">https://practicum.yandex.ru/learn/android-developer-plus</string>
+    <string name="not_found">Ничего не нашлось</string>
+    <string name="not_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте подключение к интернету</string>
+    <string name="update">Обновить</string>
+    <string name="history">Вы искали</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="_0_29">0:30</string>
+    <string name="duration">Длительность</string>
+    <string name="album">Альбом</string>
+    <string name="year">Год</string>
+    <string name="genre">Жанр</string>
+    <string name="Country">Страна</string>
+    <string name="Medidlibrary">Медиатека</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="not_favorite_tracks">Ваша медиатека пуста</string>
+    <string name="not_playlists">Вы не создали\nни одного плейлиста</string>
+    <string name="favorite_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
+
 </resources>

@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.mynewplaylist.R
 import com.example.mynewplaylist.databinding.FragmentAudioPlayerBinding
+import com.example.mynewplaylist.media.domain.models.TrackData
 import com.example.mynewplaylist.player.presentation.FavoriteState
 
 import com.example.mynewplaylist.player.presentation.PlayerViewModel
@@ -24,13 +25,15 @@ import kotlinx.coroutines.Job
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
+import kotlin.time.Duration
 import kotlin.toString
 
 class AudioplayerFragment: Fragment() {
     private lateinit var url: String
     private lateinit var isFavorite: String
-    private lateinit var track: Track
+    private lateinit var track: TrackData
     private lateinit var binding: FragmentAudioPlayerBinding
     private val viewModel: PlayerViewModel by viewModel<PlayerViewModel>{
         parametersOf(url,track)
@@ -49,7 +52,7 @@ class AudioplayerFragment: Fragment() {
         private const val ID="id"
         fun createArgs(nameTrack: String,
                        artistTrack: String,
-                       duration: Int,
+                       duration: String,
                        album: String,
                        genre: String,
                        country: String,
@@ -90,6 +93,7 @@ class AudioplayerFragment: Fragment() {
         binding.trackNameForAudio.text=requireArguments().getString(NAME)
         binding.trackArtist.text=requireArguments().getString(ARTIST)
         binding.thisDuration.text=requireArguments().getString(DURATION)
+        Log.d("duration2",requireArguments().getString(DURATION).toString())
         binding.thisAlbum.text=requireArguments().getString(ALBUM)
         binding.thisGenre.text=requireArguments().getString(GENRE)
         binding.thisCountry.text=requireArguments().getString(COUNTRY)
@@ -101,10 +105,15 @@ class AudioplayerFragment: Fragment() {
         ).into(binding.cover)
         url= requireArguments().getString(PREVIEWURL).toString()
         isFavorite=requireArguments().getString(ISFAVORITE).toString()
-        track= Track(
+        val dateFormat= SimpleDateFormat("mm:ss",Locale.getDefault())
+        val date: Date =dateFormat.parse(requireArguments().getString(DURATION))
+        val timeMillis:Long=date.time
+
+        track= TrackData(
             requireArguments().getString(NAME).toString(),
             requireArguments().getString(ARTIST).toString(),
-            requireArguments().getString(DURATION)?.toInt() ?: 0,
+            timeMillis.toInt(),
+            //requireArguments().getString(DURATION)!!.toInt(),
             requireArguments().getString(ARTWORKURL).toString(),
             requireArguments().getString(ID).toString(),
             requireArguments().getString(ALBUM).toString(),
@@ -112,21 +121,16 @@ class AudioplayerFragment: Fragment() {
             requireArguments().getString(GENRE).toString(),
             requireArguments().getString(COUNTRY).toString(),
             requireArguments().getString(PREVIEWURL).toString(),
-            requireArguments().getString(ISFAVORITE).toBoolean()
+            requireArguments().getBoolean(ISFAVORITE)
 
         )
+        Log.d("timeMillis",track.toString())
+
         binding.view2.setOnClickListener{
             viewModel.onPlayButtonClicked()
         }
         binding.view3.setOnClickListener {
-            if(requireArguments().getString(ISFAVORITE).toBoolean()==false){
-                track.isFavorite=true
-                viewModel.onFavoriteClicked()
-            }else
-            {
-                track.isFavorite=false
-                viewModel.onFavoriteClicked()
-            }
+            viewModel.onFavoriteClicked()
 
         }
         viewModel.observePlayerState().observe(viewLifecycleOwner){

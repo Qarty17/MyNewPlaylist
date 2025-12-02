@@ -27,6 +27,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient): TracksRepo
                         it.primaryGenreName,
                         it.country,
                         it.previewUrl,
+
                     )
                 }
                 emit(Resource.Success(data))

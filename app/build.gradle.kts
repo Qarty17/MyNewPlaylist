@@ -8,7 +8,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id ("kotlin-kapt")
-    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
+
 }
 
 android {
@@ -47,10 +47,10 @@ android {
 }
 dependencies {
 
-    implementation("androidx.room:room-runtime:2.5.1")
+    implementation("androidx.room:room-runtime:2.6.0")
 
-    ksp("androidx.room:room-compiler:2.5.1")
-    implementation("androidx.room:room-ktx:2.5.1")
+    kapt("androidx.room:room-compiler:2.6.0")
+    implementation("androidx.room:room-ktx:2.6.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     implementation("androidx.fragment:fragment-ktx:1.5.6")

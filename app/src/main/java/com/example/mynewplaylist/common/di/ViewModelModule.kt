@@ -1,5 +1,6 @@
 package com.example.mynewplaylist.common.di
 
+import com.example.mynewplaylist.media.domain.models.TrackData
 import com.example.mynewplaylist.media.presentation.MediaViewModel
 import com.example.mynewplaylist.media.presentation.NewPlaylistViewModel
 import com.example.mynewplaylist.player.presentation.PlayerViewModel
@@ -13,17 +14,17 @@ val viewModelModule=module{
     viewModel {
         PlaylistViewModel(get(),get())
     }
-    viewModel{(url: String,track:Track)->
+    viewModel{(url: String,track: TrackData)->
         PlayerViewModel(get(),url,track,get())
     }
     viewModel {
         SettingsViewModel(get(),get())
     }
     viewModel{
-        NewPlaylistViewModel(get())
+        NewPlaylistViewModel()
     }
 
     viewModel{
-        MediaViewModel()
+        MediaViewModel(get())
     }
 }

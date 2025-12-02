@@ -13,8 +13,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.mynewplaylist.media.domain.db.HistoryMediaInteractor
-import com.example.mynewplaylist.search.data.dto.TrackDto
-import com.example.mynewplaylist.search.domain.models.Track
+import com.example.mynewplaylist.media.domain.models.TrackData
+
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.delay
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val mediaPlayer: MediaPlayer, private val url: String, private val track: Track,private val historyMediaInteractor: HistoryMediaInteractor): ViewModel() {
+class PlayerViewModel(private val mediaPlayer: MediaPlayer, private val url: String, private val track: TrackData, private val historyMediaInteractor: HistoryMediaInteractor): ViewModel() {
     private var timerJob:Job? = null
     private val playerState= MutableLiveData<PlayerState2>(PlayerState2.Default())
     private val favoriteState= MutableLiveData<FavoriteState>(FavoriteState.IsNotFavorite())
@@ -32,7 +32,7 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer, private val url: Str
     fun observePlayerState(): LiveData<PlayerState2> = playerState
     init {
         preparePlayer()
-        isFavorite()
+        loadTrackStateFromDatabase()
     }
     fun onPause(){
         pausePlayer()
@@ -98,31 +98,50 @@ class PlayerViewModel(private val mediaPlayer: MediaPlayer, private val url: Str
     private fun getCurrentPlayerPosition(): String{
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)?:"00:00"
     }
-    private fun isFavorite(){
+    private fun loadTrackStateFromDatabase(){
         viewModelScope.launch {
-            if(historyMediaInteractor.getIdTrack(track.trackId.toLong())!=flow<Long> { 0 }){
-
-                favoriteState.postValue(FavoriteState.IsFavorite())
-            }else{
-                favoriteState.postValue(FavoriteState.IsNotFavorite())
+            try{
+                val dbTrack=historyMediaInteractor.getTrackById(track.trackId)
+                if (dbTrack!=null){
+                    track.isFavorite=dbTrack.isFavorite
+                }else{
+                    track.isFavorite=false
+                }
+                updateFavoriteState(track.isFavorite)
+            }catch (e: Exception){
+                track.isFavorite=false
+                updateFavoriteState(false)
             }
         }
     }
     fun onFavoriteClicked(){
         viewModelScope.launch {
-            when(favoriteState.value){
-                is FavoriteState.IsFavorite->{
-                    favoriteState.postValue(FavoriteState.IsNotFavorite())
-                    historyMediaInteractor.deleteTrack(track)
+            try {
+                val updatedTrack=track.copy(isFavorite = track.isFavorite)
 
-                }
-                else->{
-                    favoriteState.postValue(FavoriteState.IsFavorite())
-                    historyMediaInteractor.insertTrack(track )
-                }
+                if(historyMediaInteractor.getTrackById(track.trackId)==null){
 
+                    historyMediaInteractor.insertTrack(updatedTrack)
+                    historyMediaInteractor.addToFavorites(track.trackId)
+                    updateFavoriteState(true)
+                }
+                else{
+
+                    historyMediaInteractor.deleteTrack(updatedTrack)
+                    historyMediaInteractor.removeFromFavorites(track.trackId)
+                    updateFavoriteState(false)
+                }
+            }catch (e: Exception){
+                updateFavoriteState(track.isFavorite)
             }
         }
 
+    }
+    private fun updateFavoriteState(isFavorite: Boolean){
+        favoriteState.value=if(isFavorite){
+            FavoriteState.IsFavorite()
+        }else{
+            FavoriteState.IsNotFavorite()
+        }
     }
 }

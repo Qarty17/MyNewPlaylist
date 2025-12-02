@@ -1,5 +1,4 @@
 package com.example.mynewplaylist.search.data.dto
-
 class TrackDto(
     val trackName: String,
     val artistName: String,

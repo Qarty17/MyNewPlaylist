@@ -27,6 +27,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient): TracksRepo
                         it.primaryGenreName,
                         it.country,
                         it.previewUrl,
+
                     )
                 }
                 emit(Resource.Success(data))
@@ -35,4 +36,5 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient): TracksRepo
             else -> emit(Resource.Error("Ошибка сервера"))
         }
     }
+
 }

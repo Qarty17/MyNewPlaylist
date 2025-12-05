@@ -1,6 +1,12 @@
-package com.example.mynewplaylist.search.domain.models
+package com.example.mynewplaylist.media.data.db.entity
 
-data class Track(
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "track_table")
+data class TrackEntity(
+    @PrimaryKey
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Int,
@@ -12,6 +18,4 @@ data class Track(
     val country: String,
     val previewUrl:String,
     var isFavorite: Boolean=false
-
-
 )

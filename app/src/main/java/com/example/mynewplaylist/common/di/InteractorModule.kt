@@ -1,5 +1,7 @@
 package com.example.mynewplaylist.common.di
 
+import com.example.mynewplaylist.media.domain.db.HistoryMediaInteractor
+import com.example.mynewplaylist.media.domain.impl.HistoryMediaInteractorImpl
 import com.example.mynewplaylist.search.domain.api.HistoryInteractor
 import com.example.mynewplaylist.search.domain.api.TrackIntercator
 import com.example.mynewplaylist.search.domain.impl.HistoryInteractorImpl
@@ -13,6 +15,7 @@ import com.example.mynewplaylist.sharing.domain.impl.SharingInteractorImpl
 import org.koin.dsl.module
 
 val interactorModule = module{
+    single <HistoryMediaInteractor> { HistoryMediaInteractorImpl(get()) }
     single<TrackIntercator> {
         TrackInteractorImpl(get())
     }

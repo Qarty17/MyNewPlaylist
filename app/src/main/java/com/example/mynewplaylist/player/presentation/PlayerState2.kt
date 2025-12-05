@@ -1,6 +1,6 @@
 package com.example.mynewplaylist.player.presentation
 
-sealed class PlayerState2(val isPlayButtonEnabled: Boolean,val isPlayButtonPlaying: Boolean,val progress: String,) {
+sealed class PlayerState2(val isPlayButtonEnabled: Boolean,val isPlayButtonPlaying: Boolean,val progress: String) {
 
     class Default : PlayerState2(false,false, "00:00")
 

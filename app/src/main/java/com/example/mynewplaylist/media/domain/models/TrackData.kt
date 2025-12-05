@@ -1,6 +1,5 @@
-package com.example.mynewplaylist.search.domain.models
-
-data class Track(
+package com.example.mynewplaylist.media.domain.models
+data class TrackData(
     val trackName: String,
     val artistName: String,
     val trackTimeMillis: Int,
@@ -12,6 +11,4 @@ data class Track(
     val country: String,
     val previewUrl:String,
     var isFavorite: Boolean=false
-
-
 )

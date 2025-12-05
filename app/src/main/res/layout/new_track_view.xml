@@ -91,7 +91,7 @@
         android:layout_height="24dp"
         android:layout_gravity="end"
         android:layout_marginVertical="18dp"
-        android:layout_marginEnd="19dp"
+        android:layout_marginEnd="12dp"
         android:paddingHorizontal="8dp"
         android:paddingVertical="5dp"
         android:paddingStart="8dp"

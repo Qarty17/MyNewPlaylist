@@ -30,9 +30,6 @@ class RetrofitNetworkClient(private val playListApi: PlaylistApi, private val co
                 }
 
             }
-//            val resp=playListApi.search(dto.expression).execute()
-//            val body=resp.body()?: Response()
-//            return body.apply { resultCode=resp.code() }
         }
         else{
             Log.d("Error","message")

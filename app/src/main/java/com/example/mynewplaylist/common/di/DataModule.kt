@@ -3,8 +3,10 @@ package com.example.mynewplaylist.common.di
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.MediaPlayer
+import androidx.room.Room
 import com.example.mynewplaylist.common.data.StorageClient
 import com.example.mynewplaylist.common.data.storage.PrefsStorageClient
+import com.example.mynewplaylist.media.data.db.AppDataBase
 import com.example.mynewplaylist.search.data.HistoryRepositoryImpl
 import com.example.mynewplaylist.search.data.NetworkClient
 import com.example.mynewplaylist.search.data.network.PlaylistApi
@@ -19,6 +21,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 val dataModule= module {
+    single {
+        Room.databaseBuilder(androidContext(), AppDataBase::class.java,"database.db").build()
+    }
     single<PlaylistApi> {
         Retrofit.Builder()
             .baseUrl("https://itunes.apple.com")

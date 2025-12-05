@@ -196,14 +196,18 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
             AudioplayerFragment.createArgs(
                 track.trackName,
                 track.artistName,
+                //track.trackTimeMillis,
                 SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis),
                 track.collectionName,
                 track.primaryGenreName,
                 track.country,
                 track.releaseDate,
                 track.artworkUrl100,
-                track.previewUrl
+                track.previewUrl,
+                false,
+                track.trackId
             ))
+        Log.d("DURATION",track.trackTimeMillis.toString())
     }
     companion object {
         const val VALUE = "VALUE"
@@ -238,8 +242,6 @@ class SearchFragment: Fragment(), TrackAdapter.Listener {
         binding.apply {
 
             recyclerView.visibility=View.VISIBLE
-
-
             notFound.visibility=View.GONE
             notInternet.visibility=View.GONE
             progressBar.visibility=View.GONE

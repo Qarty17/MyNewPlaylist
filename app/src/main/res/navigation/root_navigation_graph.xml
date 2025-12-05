@@ -23,7 +23,11 @@
         android:id="@+id/detailsFragment"
         android:name="com.example.mynewplaylist.media.ui.DetailsFragment"
         android:label="fragment_media"
-        tools:layout="@layout/fragment_media" />
+        tools:layout="@layout/fragment_media" >
+        <action
+            android:id="@+id/action_detailsFragment_to_audioplayerFragment"
+            app:destination="@id/audioplayerFragment" />
+    </fragment>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.mynewplaylist.settings.ui.SettingsFragment"
@@ -38,5 +42,7 @@
         android:id="@+id/tracksFragment"
         android:name="com.example.mynewplaylist.media.ui.TracksFragment"
         android:label="track_fragment"
-        tools:layout="@layout/track_fragment" />
+        tools:layout="@layout/track_fragment" >
+
+    </fragment>
 </navigation>

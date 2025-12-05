@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
-
+//добрый день, не вижу пометки обязательно на гит хабе
 class TracksFragment: Fragment(), TrackAdapter.Listener {
     private var favoriteTrackAdapter: TrackAdapter= TrackAdapter(this){
 
